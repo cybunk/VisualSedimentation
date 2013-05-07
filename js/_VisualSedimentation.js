@@ -6,9 +6,10 @@ var scripts = document.getElementsByTagName('script'),
     currentScriptSrc = scripts[scripts.length-1].src, 
 		_vsDirectory = currentScriptSrc.replace('_VisualSedimentation.js', '');
 
-// external Librairy 
+// external Libraries 
+if (!window.jQuery || parseFloat(window.jQuery().jquery) < 1.3)
+    includeJS(_vsDirectory+'lib/jQuery/jquery-2.0.0.min.js');
 includeJS(_vsDirectory+'lib/d3/d3.v2.js');
-includeJS(_vsDirectory+'lib/jQuery/jquery-1.4.2.min.js');
 includeJS(_vsDirectory+'lib/Box2DWeb/Box2DWeb-2.1.a.3.min.js');
 
 // Core, n_vsDirectory+'d
