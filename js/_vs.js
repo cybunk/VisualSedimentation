@@ -37,15 +37,6 @@ var VisualSedimentation = function(element,options){
   this.strata       = $.fn._vs.strata
 //  this.aggregate    = $.fn._vs.aggregate 
   this.requestAnimFrame;
-  
-
-  // Mouse object have to be refactor
-  this.mouse        ={}
-  this.mouse.x      = 0
-  this.mouse.y      = 0
-  this.mouse.isMouseDragging = false
-  this.mouse.isMouseDown     = false
-  this.mouse.selectedBody    = null
 
 
   // Variables 
@@ -371,193 +362,76 @@ var VisualSedimentation = function(element,options){
        );
        //this.decay.update(self);
 
-      self.strata.update(self)
+      self.strata.update(self);
 
+// MOUSE HANDLING BY @RaphV
 
- // MOUSE PART 
- // inspired by box2d stuffs, have to clean and finish this ! 
- // http://www.emanueleferonato.com/2008/11/20/dragging-objects-with-box2d-flash/
- // --------------------------
-   this.getBodyAtMouse=function (_this) {
+    (function(vs) {
+        var bodiesAtMouse = [],
+            previousBodiesAtMouse = [],
+            mouseX = 0,
+            mouseY = 0,
+            mouseDown = false;
+        
+        function mousemove(e) {
+            
+            previousBodiesAtMouse = bodiesAtMouse;
+            bodiesAtMouse = [];
+            
+            var canvasOffset = $(vs.settings.DOMelement).offset(),
+                canvasX = e.pageX - canvasOffset.left,
+                canvasY = e.pageY - canvasOffset.top,
+                worldX = canvasX / vs.settings.options.scale,
+                worldY = canvasY / vs.settings.options.scale,
+                mousePVec = new vs.phy.b2Vec2(worldX,worldY),
+                aabb = new vs.phy.b2AABB(),
+                radius = .001;
 
-      var x         = _this.mouse.x/_this.settings.options.scale
-      var y         =_this.mouse.y/_this.settings.options.scale
-      var mousePVec = new _this.phy.b2Vec2(x,y);
-      var aabb      = new _this.phy.b2AABB();
-      var area      = 0.001
-
-      //console.log(_this.mouse.x,_this.mouse.y)
-      aabb.lowerBound.Set(x - area, y - area);
-      aabb.upperBound.Set(x + area, y + area);
-      
-      // Query the world for overlapping shapes.
-      _this.mouse.selectedToken = null;
-
-      // MERCI JULIEN POUR LE CLOSURE 
-      //selectedBody
-      _this.world.QueryAABB(function(fixture){
-        return getBodyCB(fixture,_this,mousePVec)
-      }, aabb);
-
-      return _this.mouse.selectedToken;
-   }
-   //http://stackoverflow.com/questions/11674200/how-to-send-prototype-method-as-a-callback-in-javascript
-   // pb here 
-   function getBodyCB(fixture,_this,mousePVec) {
-       //console.log("phy",phy)
-      //console.log("fixture",fixture.m_userData.type,fixture)
-      //_this.mouse.elementpoi = fixture.GetBody()
-      _this.mouse.selectedToken = fixture;
-
-      if(fixture.GetBody().GetType() != _this.phy.b2Body.b2_staticBody) {
-         if(fixture.GetShape().TestPoint(fixture.GetBody().GetTransform(), mousePVec)) {
-            _this.mouse.selectedToken = fixture;
-            return false;
-         }
-      }
-      return true;
-   }
-
-    this.handleMouseMove = function(e,_this) {
-       canvasPosition   = DOMabsOffset(_this.settings.DOMelement)
-       _this.mouse.x = (e.clientX - (canvasPosition.offsetLeft- this.getScrollPosition()[0]));
-       _this.mouse.y = (e.clientY - (canvasPosition.offsetTop- this.getScrollPosition()[1]));
-      //if( _this.mouse.isMouseDown){  console.log(_this.mouse.y,canvasPosition.y)}
-      //console.log("mouse",e.clientX,e.clientY )
-      //console.log("mouse",canvasPosition.x,canvasPosition.y )
-      //console.log("=",_this.mouse.x,_this.mouse.y)
+            aabb.lowerBound.Set(worldX - radius, worldY - radius);
+            aabb.upperBound.Set(worldX + radius, worldY + radius);
+            
+            vs.world.QueryAABB(function(fixture) {
+                if (fixture.GetShape().TestPoint(fixture.GetBody().GetTransform(), mousePVec)) {
+                    bodiesAtMouse.push(fixture);
+                    if (previousBodiesAtMouse.indexOf(fixture) === -1) {
+                        var u = fixture.GetUserData();
+                        if (u && u.callback && u.callback.mouseover) {
+                            u.callback.mouseover(vs.select("ID"), u.ID);
+                        }
+                    }
+                }
+                return true;
+            }, aabb);
+            
+            previousBodiesAtMouse.forEach(function(fixture) {
+                if (bodiesAtMouse.indexOf(fixture) === -1) {
+                    var u = fixture.GetUserData();
+                    if (u && u.callback && u.callback.mouseout) {
+                        u.callback.mouseout(vs.select("ID"), u.ID);
+                    }
+                }
+            });
+            
+        }
+        
+        function click() {
+            bodiesAtMouse.forEach(function(fixture) {
+                var u = fixture.GetUserData();
+                if (u && u.callback && u.callback.onclick) {
+                    u.callback.onclick(vs.select("ID"), u.ID);
+                }
+            });
+        }
+        
+        $(document).mousemove(mousemove);
+        $(document).click(click);
+        
+    })(self);
+ 
+// END OF MOUSE HANDLING
+ 
    };
-   // from 
-   this.getScrollPosition= function(){
-    return Array((document.documentElement && document.documentElement.scrollLeft) || window.pageXOffset || self.pageXOffset || document.body.scrollLeft,(document.documentElement && document.documentElement.scrollTop) || window.pageYOffset || self.pageYOffset || document.body.scrollTop);
-    }
-
-   document.addEventListener("mousemove",   function (e){onDocumentMouseMove(e,self)});
-   document.addEventListener("mouseup",   function (e){onDocumentMouseUp(e,self)});
-   document.addEventListener("mousedown", function (e){onDocumentMouseDown(e,self)});
-
-
-
-   function onDocumentMouseOver(e,_this) {
-
-     var s = _this.getBodyAtMouse(_this);   
-        if(s!=null){
-          if(typeof(s.m_userData)!="undefined"){
-           if(typeof(s.m_userData.callback)!="undefined"){
-            if(typeof(s.m_userData.callback.mouseover)=="function"){
-                var t = _this.select('ID',s.m_userData.ID)
-                s.m_userData.callback.mouseover(t)                
-            }
-
-            if(typeof(s.m_userData.callback.mouseout)=="function"){
-                //console.log("mouseout exist")
-                var t = _this.select('ID',s.m_userData.ID)
-                var mouseoutTrigger 
-                var rollOut = function(){
-                      var mt  = mouseoutTrigger
-                      var tt  = t
-                      var ici = _this
-                      var ss  = s
-                      return function(){
-                           var s = ici.getBodyAtMouse(ici);
-                           var mo = false;
-                           if(s!=null){
-                              if(typeof(s.m_userData)!="undefined"){
-                                  if(s.m_userData.ID==tt.attr('ID')){
-                                      mo=false
-                                  }else{
-                                    mo=true
-                                  }
-                              }else{
-                                mo=true
-                              }
-                           }else{
-                            mo=true;
-                           }
-                           if(mo){
-                            ss.m_userData.callback.mouseout(tt)
-                            clearInterval(mouseoutTrigger)
-                           }
-                      }
-                };
-                mouseoutTrigger = window.setInterval(rollOut(),100)
-            }
-           }
-          }
-        }
-   }
-
-   function onDocumentMouseDown(e,_this) {
-     //console.log("onDocumentMouseDown")
-     _this.mouse.isMouseDown = true;
-     // return false;
-     _this.handleMouseMove(e,_this);
-     var s = _this.getBodyAtMouse(_this);
-    if(s!=null){
-      if(typeof(s.m_userData)!="undefined"){
-        if(typeof(s.m_userData.callback)!="undefined"){
-          if(typeof(s.m_userData.callback.onclick)=="function"){
-               var t = _this.select('ID',s.m_userData.ID)
-              s.m_userData.callback.onclick(t)  
-         }
-        }
-      }
-     }
-   }
-
-      function onDocumentMouseUp(e,_this) {
-        _this.mouse.isMouseDown = false;
-       // isMouseDown = false;
-       // return false;
-       //console.log("onDocumentMouseUp")
-      }
-      function onDocumentMouseMove( e,_this ) {
-
-       if(_this.mouse.isMouseDown){
-           _this.mouse.isMouseDragging = true;
-           _this.mouse.x = e.clientX;
-           _this.mouse.y = e.clientY;
-      
-      }else{
-          _this.handleMouseMove(e,_this);
-          onDocumentMouseOver("move",_this)
-      }
-      //console.log("m",_this)
-      }
-  }       
     
-
-  this.mouse.update = function (s) {   
-      if(isMouseDown && (!mouseJoint)) {
-         var body = getBodyAtMouse();
-         if(body) {
-            var md = new b2MouseJointDef();
-            md.bodyA = world.GetGroundBody();
-            md.bodyB = body;
-            md.target.Set(mouseX, mouseY);
-            md.collideConnected = true;
-            md.maxForce = 300.0 * body.GetMass();
-            mouseJoint = world.CreateJoint(md);
-            body.SetAwake(true);
-         }
-      }
-      
-      if(mouseJoint) {
-         if(isMouseDown) {
-            mouseJoint.SetTarget(new b2Vec2(mouseX, mouseY));
-         } else {
-            world.DestroyJoint(mouseJoint);
-            mouseJoint = null;
-         }
-      }
-   
-   };
-
-
-
- // MOUSE END 
- // --------------------------
-
     this.update = function (s) {
      	this.world.Step(1 / 60, 10, 10);
      	this.world.DrawDebugData();
