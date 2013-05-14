@@ -396,7 +396,7 @@ var VisualSedimentation = function(element,options){
                     if (previousBodiesAtMouse.indexOf(fixture) === -1) {
                         var u = fixture.GetUserData();
                         if (u && u.callback && u.callback.mouseover) {
-                            u.callback.mouseover(vs.select("ID"), u.ID);
+                            u.callback.mouseover(vs.select("ID", u.ID));
                         }
                     }
                 }
@@ -407,7 +407,7 @@ var VisualSedimentation = function(element,options){
                 if (bodiesAtMouse.indexOf(fixture) === -1) {
                     var u = fixture.GetUserData();
                     if (u && u.callback && u.callback.mouseout) {
-                        u.callback.mouseout(vs.select("ID"), u.ID);
+                        u.callback.mouseout(vs.select("ID", u.ID));
                     }
                 }
             });
@@ -418,7 +418,7 @@ var VisualSedimentation = function(element,options){
             bodiesAtMouse.forEach(function(fixture) {
                 var u = fixture.GetUserData();
                 if (u && u.callback && u.callback.onclick) {
-                    u.callback.onclick(vs.select("ID"), u.ID);
+                    u.callback.onclick(vs.select("ID", u.ID));
                 }
             });
         }
