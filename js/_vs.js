@@ -367,41 +367,63 @@ var VisualSedimentation = function(element,options){
 // MOUSE HANDLING BY @RaphV
 
     (function(vs) {
+        
         var bodiesAtMouse = [],
             previousBodiesAtMouse = [],
-            mouseX = 0,
-            mouseY = 0,
-            mouseDown = false;
+            throttleTime = 0,
+            throttleTimeout,
+            pageX, pageY;
         
         function mousemove(e) {
+            pageX = e.pageX;
+            pageY = e.pageY;
+            listBodiesAtMouse();
+        }
+        
+        function listBodiesAtMouse() {
+            
+            if (Date.now() - throttleTime < 150) {
+                clearTimeout(throttleTimeout);
+                throttleTimeout = setTimeout(listBodiesAtMouse, 150);
+                return;
+            }
+            throttleTime = Date.now();
             
             previousBodiesAtMouse = bodiesAtMouse;
             bodiesAtMouse = [];
             
-            var canvasOffset = $(vs.settings.DOMelement).offset(),
-                canvasX = e.pageX - canvasOffset.left,
-                canvasY = e.pageY - canvasOffset.top,
-                worldX = canvasX / vs.settings.options.scale,
-                worldY = canvasY / vs.settings.options.scale,
-                mousePVec = new vs.phy.b2Vec2(worldX,worldY),
-                aabb = new vs.phy.b2AABB(),
-                radius = .001;
-
-            aabb.lowerBound.Set(worldX - radius, worldY - radius);
-            aabb.upperBound.Set(worldX + radius, worldY + radius);
+            var jqCanvas = $(vs.settings.DOMelement)
+                canvasOffset = jqCanvas.offset(),
+                mouseX = pageX - canvasOffset.left,
+                mouseY = pageY - canvasOffset.top,
+                canvasH = jqCanvas.height(),
+                canvasW = jqCanvas.width();
+                
+            if (mouseX >= 0 && mouseY >= 0 && mouseX <= canvasW && mouseY <= canvasH) {
             
-            vs.world.QueryAABB(function(fixture) {
-                if (fixture.GetShape().TestPoint(fixture.GetBody().GetTransform(), mousePVec)) {
-                    bodiesAtMouse.push(fixture);
-                    if (previousBodiesAtMouse.indexOf(fixture) === -1) {
-                        var u = fixture.GetUserData();
-                        if (u && u.callback && u.callback.mouseover) {
-                            u.callback.mouseover(vs.select("ID", u.ID));
+                var worldX = mouseX / vs.settings.options.scale,
+                    worldY = mouseY / vs.settings.options.scale,
+                    mousePVec = new vs.phy.b2Vec2(worldX,worldY),
+                    aabb = new vs.phy.b2AABB(),
+                    radius = .001;
+    
+                aabb.lowerBound.Set(worldX - radius, worldY - radius);
+                aabb.upperBound.Set(worldX + radius, worldY + radius);
+                
+                vs.world.QueryAABB(function(fixture) {
+                    if (fixture.GetShape().TestPoint(fixture.GetBody().GetTransform(), mousePVec)) {
+                        bodiesAtMouse.push(fixture);
+                        if (previousBodiesAtMouse.indexOf(fixture) === -1) {
+                            var u = fixture.GetUserData();
+                            if (u && u.callback && u.callback.mouseover) {
+                                u.callback.mouseover(vs.select("ID", u.ID));
+                            }
                         }
                     }
-                }
-                return true;
-            }, aabb);
+                    return true;
+                }, aabb);
+            
+            }
             
             previousBodiesAtMouse.forEach(function(fixture) {
                 if (bodiesAtMouse.indexOf(fixture) === -1) {
