@@ -52,7 +52,7 @@ $.fn._vs.strata = {
                                 label: settings.data.model[i].label+"_"+a,
                                 category: a,
                                 texture: t,
-                                value: function() { r=eval("f="+settings.data.strata[a][b].value); return r();}
+                                value: function() { try { return eval("f="+settings.data.strata[a][b].value); } catch(e) { return 0; } }
                               }
                  
                     
