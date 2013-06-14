@@ -78,7 +78,8 @@ $.fn._vs.stream = {
               i)
        )                  
     },
-    setSpeed:function(_this,speed){
+    setSpeed:function(_this,speed,i){
+      
       this.speed  = speed;
       for( var i = 0 ; i<_this.dataFlow.length ; i++) {
         window.clearInterval(_this.dataFlow[i]);
