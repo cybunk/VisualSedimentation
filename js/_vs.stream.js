@@ -8,7 +8,7 @@
 $.fn._vs.stream = {
     i:null,
     buffer:[],
-    speed:10000/6,
+    speed:1000/6,
     strategy:null,
     type:null,
 
@@ -25,6 +25,7 @@ $.fn._vs.stream = {
     },
 
     update:function (_this){
+
       if(type=='generator'){
         for(var i = 0 ; i<_this.settings.data.model.length ; i++) {
          _this.dataFlow[i] = setInterval(
@@ -38,9 +39,7 @@ $.fn._vs.stream = {
                             })(i,_this)
                             ,this.speed);
         }
-
       }else if (type=='tokens'){
-
         _this.dataFlow[0] = setInterval(
                             (function(i,_this){
                               return function() { 
@@ -57,10 +56,10 @@ $.fn._vs.stream = {
                               }
                             })(i,_this)
                             ,this.speed);
-
       }else{
         //console.log('direct no stream')
       }
+      console.log(_this.dataFlow)
     },
     generator:function(_this,fn){
       /*
@@ -80,12 +79,16 @@ $.fn._vs.stream = {
        )                  
     },
     setSpeed:function(_this,speed){
-      speedFlow  = speed;
-      for( var i = 0 ; i<categorys.length ; i++) {
-        window.clearInterval(dataFlow[i]);
+      this.speed  = speed;
+      for( var i = 0 ; i<_this.dataFlow.length ; i++) {
+        window.clearInterval(_this.dataFlow[i]);
       }
-      window.clearInterval(decayFlow);
-      dataFlow(categorys);
+      //window.clearInterval(decayFlow);
+      //dataFlow(categorys);
+      this.update(_this)
+    },
+    getSpeed:function(){
+      return this.speed
     }
 }
 

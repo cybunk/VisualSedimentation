@@ -23,7 +23,9 @@ $.fn._vs.decay = {
           if(tokenSize<=limit){
             if (_this.settings.sedimentation.flocculate.strategy!=null){ 
               _this.flocculate.destroyIt(_this,this.tokens[b]);
-              _this.strata.update(_this);
+              if(_this.settings.sedimentation.aggregation.strataUpdate){
+                _this.strata.update(_this);
+              }
             }
           }
         }

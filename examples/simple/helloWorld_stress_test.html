@@ -68,17 +68,48 @@
  <script>
 
   $(function() {
-  
+    // ----------------------------------------------------
+    // Contact counter
 
-    // DEFINE PARAMETER TO IMPACT 
+//    //$("#fpsmeter").clone().appendTo('#collisionsneter')
+
+    // DEFINED LISTENER 
+    barChart.numContacts = 0;
+    var listener = new Box2D.Dynamics.b2ContactListener;
+    listener.BeginContact = function(contact) {
+      barChart.numContacts ++
+    }
+    listener.EndContact = function(contact) {
+      barChart.numContacts --
+    }
+    listener.PostSolve = function(contact, impulse) {}
+    listener.PreSolve  = function(contact, oldManifold) {}
+    barChart.world.SetContactListener(listener);
+
+    // SETUP A DIV TO SHOW CONTACT NUMBER 
+    $("#panel").prepend("<div id='contactmeters' style='left:70px;position:relative;display:block;' >"
+      +"<div style='padding: 5px; min-width: 95px; height: 30px; line-height: 30px; text-align: right; text-shadow: rgba(255, 255, 255, 0.498039) 1px 1px 0px, rgba(255, 255, 255, 0.498039) -1px -1px 0px; color: rgb(102, 102, 102); background-color: rgb(255, 255, 255); box-shadow: rgba(0, 0, 0, 0.0980392) 0px 0px 0px 1px; position: absolute; z-index: 10; left: 5px; top: 5px; right: auto; bottom: auto; margin: 0px; cursor: pointer; background-position: initial initial; background-repeat: initial initial;'>"
+      +"<div id='numContacts' style='position: absolute; top: 0px; right: 0px; padding: 5px 10px; height: 30px; font-size: 24px; font-family: Consolas, 'Andale Mono', monospace; z-index: 2;' >XXX</div>"
+      +"<div style='position: absolute; top: 0px; left: 0px; padding: 5px 10px; height: 30px; font-size: 12px; line-height: 32px; font-family: sans-serif; text-align: left; z-index: 2;'>C/S</div>"
+      +"</div>"
+      +"</div>")
+    var contactMeters = window.setInterval(
+              function(){
+                $("#numContacts").text(barChart.numContacts)
+              },100);
+
+
+    // ----------------------------------------------------
+    // DEFINE PARAMETER PRESENT IN THE PANEL  
     var controlpanel = {
       targetId:"panel",
-      title:"Parameters",
+      title:"Param",
       control:[
                 {
                   id:   "slider_TokensSeconds",
                   label:"Incomming rate",
                   unit: "token by seconds",
+                  type:"slider",
                   min: 1,
                   max: 100,
                   setup:function(id){
@@ -94,6 +125,7 @@
                   id:"slider_GravityForces",
                   label:"Vertical gravity forces",
                   unit:"metters by seconds",
+                  type:"slider",
                   setup:function(){
                     return barChart.settings.sedimentation.world.gravity.y
                   },
@@ -106,10 +138,11 @@
                 {
                   id:"slider_Decay",
                   label:"Decay Forces",
+                  type:"slider",
                   unit:"",
                   min:1,
-                  max:4,
-                  step:0.001,
+                  max:1.8,
+                  step:0.0001,
                   setup:function(){
                       return barChart.settings.sedimentation.suspension.decay.power 
                   },
@@ -121,8 +154,9 @@
                   id:"slider_Flocullation",
                   label:"Flocullation threshold",
                   unit:"Size in pixel",
+                  type:"slider",
                   min:0,
-                  max:4,
+                  max:5,
                   step:0.1,
                   setup:function(){
                     return  barChart.settings.sedimentation.token.size.minimum
@@ -131,20 +165,23 @@
                   update:function(event,ui,self){
                       barChart.settings.sedimentation.token.size.minimum = ui.value
                   },
-                }
-                /*
+                },
                 {
-                  id:"slider_PhysicsCycle",
-                  label:"Physics Cycle by seconds",
-                  unit:"cycle by seconds",
+                  id:   "checkbox_stratas_update",
+                  label: "Update stratas: ",
+                  type:"button", 
                   setup:function(){
-
+                    return  barChart.settings.sedimentation.aggregation.strataUpdate
                   },
-                  update:function(event,ui,self){
-
-                  }*/
+                  update:function(self){
+                      if(barChart.settings.sedimentation.aggregation.strataUpdate==true){
+                        barChart.settings.sedimentation.aggregation.strataUpdate = false
+                      }else{
+                        barChart.settings.sedimentation.aggregation.strataUpdate = true
+                      }
+                      $( "#"+myObject.id).text(barChart.settings.sedimentation.aggregation.strataUpdate)
+                  },       
                 }
-                
       ],
       result:{
         title:"Results",
@@ -172,36 +209,16 @@
     $("#"+controlpanel.targetId).append("<h2>"+controlpanel.title+"</h2>")
 
 
-    // Slider common configuration 
-    var sliderObject = []
-    function sliderConfiguration(myObject,i){
+    // COMMAND common configuration 
+    var contolObject = []
+    function controlConfiguration(myObject,i){
+
       var initValue    = myObject.setup()
-      // update text
-      $("#"+myObject.id+"_m").text(initValue)
 
-      if(typeof(myObject.min)=="undefined")myObject.min=0
-      if(typeof(myObject.max)=="undefined")myObject.max=100
-      if(typeof(myObject.step)=="undefined")myObject.step=1
+      if(myObject.type=="slider"){
 
-      sliderObject[i] = {
-                            value: initValue,
-                            min:  myObject.min,
-                            max:  myObject.max,
-                            step: myObject.step,
-                            slide: function (event, ui){
-                              $("#"+myObject.id+"_m").text(ui.value)
-                              return myObject.update(event,ui,myObject)
-                            }
-                          }
-
-      $( "#"+myObject.id).slider(sliderObject[i]);
-    }
-
-    // Draw interface (slider + text)
-    for (var i =0; i < controlpanel.control.length; i++) {
-      var myObject = controlpanel.control[i]
-
-      $("#"+controlpanel.targetId).append(
+        // CReate html 
+        $("#"+controlpanel.targetId).append(
         "<div style='padding-top:10px;'>"
         +myObject.label
         +" "
@@ -214,8 +231,52 @@
         +"<div style='padding:5px;'>"
         +"<div id='"+myObject.id+"' ></div>"
         +"</div>")
-      sliderConfiguration(myObject,i)
+
+        // update text
+        $("#"+myObject.id+"_m").text(initValue)
+
+        // configure controle 
+        if(typeof(myObject.min)=="undefined")myObject.min=0
+        if(typeof(myObject.max)=="undefined")myObject.max=100
+        if(typeof(myObject.step)=="undefined")myObject.step=1
+        contolObject[i] = {
+                              value: initValue,
+                              min:  myObject.min,
+                              max:  myObject.max,
+                              step: myObject.step,
+                              slide: function (event, ui){
+                                $("#"+myObject.id+"_m").text(ui.value)
+                                return myObject.update(event,ui,myObject)
+                              }
+                            }
+        // create controle
+        $( "#"+myObject.id).slider(contolObject[i]);
+
+      }else{
+
+        $("#"+controlpanel.targetId).append(
+          "<div style='padding-top:10px;'>"
+        +myObject.label
+        +" "
+        +"<div id='"+myObject.id+"' ></div>"
+        +"</div>")
+
+
+        $( "#"+myObject.id).button();
+        $( "#"+myObject.id).text(initValue)
+        $( "#"+myObject.id).bind('click',function() {
+          myObject.update(myObject)
+        });
+      }
+    }
+    
+
+    // Draw interface (slider + text)
+    for (var i =0; i < controlpanel.control.length; i++) {
+      var myObject = controlpanel.control[i]
+      controlConfiguration(myObject,i,controlpanel)
     };
+
 
 
   });

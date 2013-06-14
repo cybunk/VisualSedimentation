@@ -5,37 +5,16 @@ $.fn._vs.flocculate = {
     buffer:[], 
 
     init:function(_this){
-      //console.log("init flocculate",_this)
-      // create one buffer by data model (categorys)
       for (var i =0; i<_this.settings.data.model.length; i++) {
         this.buffer[i] = []
-        //console.log(i)
       };
     },
 
 
-    // OLD STUFF NOT USED  
-    addtobuffer:function(_this,token){
-      c = token.attr("category")
-      bufferSize =_this.settings.sedimentation.flocculate.bufferSize
-      this.buffer[c].push(token)
-      _this.decay.tokens.splice(_this.decay.tokens.indexOf(token),1)
-      //
-      token.attr("callback","bufferFlocculation",token)
-
-      if(this.buffer[c].length > bufferSize){
-        //console.log("order")
-        this.update(_this,c,bufferSize)
-      }
-    },
-
     destroyIt:function(_this,token){
       token.attr("callback","flocculation",token) // callback 
       token.attr("state",2)                       // flocullating state
-      //token.myobj=null
-     // console.log(token.attr('ID'))
       var del = _this.world.DestroyBody(token.myobj.GetBody());
-      
       return del
     },
 

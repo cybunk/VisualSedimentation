@@ -10,8 +10,9 @@ $.fn._vs.draw = {
     },
 
     update:function(_this){
-      /* refresh rate of canvas (show trail) */
       //console.log(_this.ctx)
+
+      /* refresh rate and debug mode of canvas (show trail) */
       if(this.settings.draw.trail==1) {
         _this.ctx.clearRect(0, 0, _this.ctx.canvas.clientWidth, _this.ctx.canvas.clientHeight);
       }else{
@@ -21,6 +22,13 @@ $.fn._vs.draw = {
             ctx.canvas.clientHeight,
             "rgba(255,255,255,"+this.settings.draw.trail+")",
             ctx);
+      }
+
+      // DRAW START Callback  
+      if(typeof(_this.settings.draw.callback.begin)!="undefined"){
+          if(typeof(_this.settings.draw.callback.begin)=="function"){
+                _this.settings.draw.callback.begin(_this)  
+          }
       }
 
       /* Draw body(s) from box2d */
@@ -39,6 +47,14 @@ $.fn._vs.draw = {
                 "rgba(255,0,0,0.2)",
                 ctx);
       }
+
+      // DRAW END Callback  
+      if(typeof(_this.settings.draw.callback.end)!="undefined"){
+          if(typeof(_this.settings.draw.callback.end)=="function"){
+                _this.settings.draw.callback.end(_this)  
+          }
+      }
+
     },
     debugDrawChart :function (x,y,w,h,color,ctx) {
       ctx.save();  

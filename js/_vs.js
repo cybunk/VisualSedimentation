@@ -56,10 +56,9 @@ var VisualSedimentation = function(element,options){
 	var defaultSettings = {
           x:0,
           y:0,
-          width:290.5,
+          width:300.5,
           height:300.5,
           DOMelement:null,
-
           chart:{ 
               x:undefined,
               y:undefined,
@@ -112,13 +111,17 @@ var VisualSedimentation = function(element,options){
               tokenPast:0,
           		stream:{
                       provider:'generator',
-          				    refresh:10000/8,
+          				    refresh:1000/1,
                       now:0
       					},
           		}
           ,
           sedimentation:{
-              token:{size:{original:4
+              world:{
+                gravity:{x:0.001,y:10},
+                timeStep:60,
+              },
+              token:{size:{original:5
                           ,minimum:2}
                           ,visible:true},   // fill color, shape,
               incoming:{
@@ -136,7 +139,7 @@ var VisualSedimentation = function(element,options){
             			 number:1,	       // 1 = one element by one, more = by groupe of n
             			 action:"buffer",       	// [buffer,continue]
             			 strategy:"Size",       	// [BufferSize, Time, AcummulationAreaHeight, Fps, Manual]
-                   bufferSize:5,         	  // number of token to make floculation
+                   bufferSize:0,         	  // number of token to make floculation
             			 bufferTime:1000,      	  // time buffer to make flocullation
             			 bufferHeight:50,       	// height (pixel) to make floculation
             			 bufferFrameRate:25,    	// if the computer is to slow floculate
@@ -149,14 +152,25 @@ var VisualSedimentation = function(element,options){
                           refresh:200
                          },
               accumulation:{height:null},   // pourcent ,adaptative
-              aggregation:{height:0, maxData:0, invertStrata:false},       // pourcent ,adaptative
+              aggregation:{
+                    height:100,           // pourcent ,adaptative
+                    maxData:0,
+                    invertStrata:false,
+                    strataUpdate:true
+              },       
           },
+          draw:{
+              callback:{
+                //begin:function(_this){},
+                //end:function(_this){}
+              }
+            },
           options:{
-                  refresh:1000/25,
+                  refresh:1000/30,
                   panel:false,
                   scale:30,
                   layout:false,
-                  canvasFirst:true
+                  canvasFirst:true,
                   }
           }
 
@@ -302,7 +316,7 @@ var VisualSedimentation = function(element,options){
         // Create the physical simulation 
    		   this.world = new this.phy.b2World(
    		      new this.phy.b2Vec2(0, 0)       //gravity
-   		     ,  true                 //allow sleep
+   		     ,  false                 //allow sleep
    		   );
 
    	    // Create container and canvas for physical simulation drawing 
@@ -332,10 +346,13 @@ var VisualSedimentation = function(element,options){
        //if(typeof(this.settings.options.debugaggregate)=="undefined"){
        // this.aggregate.init(self);
        //}
+
        // Initiatlise stream 
        this.stream.init(self)
+
        // Initiatlise decay
        this.flocculate.init(self)
+
        // Update stream 
        this.stream.update(self);
 
@@ -346,17 +363,19 @@ var VisualSedimentation = function(element,options){
       this.strata.init(this)
 
    		 // Update the physical simulation 
-  		 window.setInterval(
+  		 this.phy.loops = window.setInterval(
               function(){self.update(self);},
                self.settings.options.refresh/2
               );
+
        // Refresh canvas drawings 
-       window.setInterval(
+       this.draw.loops = window.setInterval(
               function(){self.draw.update(self);},
               self.settings.options.refresh
               );
+
        // Update Decay 
-       window.setInterval(
+       this.decay.loops = window.setInterval(
               function(){self.decay.update(self);},
               self.settings.sedimentation.suspension.refresh
        );
@@ -454,10 +473,9 @@ var VisualSedimentation = function(element,options){
    };
     
     this.update = function (s) {
-     	this.world.Step(1 / 60, 10, 10);
-     	this.world.DrawDebugData();
+     	this.world.Step(1 / 30, 10, 10);
+     	//this.world.DrawDebugData();
      	this.world.ClearForces();
-      //console.log('u')
      }
 
     var drawInit = function(){ 		  
@@ -502,7 +520,7 @@ var VisualSedimentation = function(element,options){
             );
     }
 
-    // clone object 
+    // Clone object 
     // http://stackoverflow.com/questions/728360/copying-an-object-in-javascript
     function clone(obj) {
       if (null == obj || "object" != typeof obj) return obj;
