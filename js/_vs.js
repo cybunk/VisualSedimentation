@@ -148,7 +148,7 @@ var VisualSedimentation = function(element,options){
               suspension:{
                           height:null,      // pourcent,adaptative
                           incomming:'top',
-                          decay:{power:1.001}, // null
+                          decay:{power:1.01}, // null
                           refresh:200
                          },
               accumulation:{height:null},   // pourcent ,adaptative

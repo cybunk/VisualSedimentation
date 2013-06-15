@@ -28,10 +28,12 @@
       <h1>Hello World Stress test </h1>
       <!-- div container -->
       <div id="myDemo" style="width:350px;"></div>
+      <div id="report">
+      <div id="fpsmeter" style="left:180px;position:relative;display:block;"></div>
+      </div>
       <!-- div panel -->
       <div id="panel" style="top:-350px;left:450px;position:relative;display:block;width:300px;height:300px;">
       <!-- div fps counter -->
-      <div id="fpsmeter" style="left:180px;position:relative;display:block;"></div>
       </div>
 
       <!-- Create my visual sedimentation -->
@@ -69,9 +71,7 @@
 
   $(function() {
     // ----------------------------------------------------
-    // Contact counter
-
-//    //$("#fpsmeter").clone().appendTo('#collisionsneter')
+    // CONTACT COUNTER
 
     // DEFINED LISTENER 
     barChart.numContacts = 0;
@@ -87,8 +87,8 @@
     barChart.world.SetContactListener(listener);
 
     // SETUP A DIV TO SHOW CONTACT NUMBER 
-    $("#panel").prepend("<div id='contactmeters' style='left:70px;position:relative;display:block;' >"
-      +"<div style='padding: 5px; min-width: 95px; height: 30px; line-height: 30px; text-align: right; text-shadow: rgba(255, 255, 255, 0.498039) 1px 1px 0px, rgba(255, 255, 255, 0.498039) -1px -1px 0px; color: rgb(102, 102, 102); background-color: rgb(255, 255, 255); box-shadow: rgba(0, 0, 0, 0.0980392) 0px 0px 0px 1px; position: absolute; z-index: 10; left: 5px; top: 5px; right: auto; bottom: auto; margin: 0px; cursor: pointer; background-position: initial initial; background-repeat: initial initial;'>"
+    $("#report").prepend("<div id='contactmeters' style='left:90px;position:relative;display:block;' >"
+      +"<div style='padding: 5px; min-width: 75px; height: 30px; line-height: 30px; text-align: right; text-shadow: rgba(255, 255, 255, 0.498039) 1px 1px 0px, rgba(255, 255, 255, 0.498039) -1px -1px 0px; color: rgb(102, 102, 102); background-color: rgb(255, 255, 255); box-shadow: rgba(0, 0, 0, 0.0980392) 0px 0px 0px 1px; position: absolute; z-index: 10; left: 5px; top: 5px; right: auto; bottom: auto; margin: 0px; cursor: pointer; background-position: initial initial; background-repeat: initial initial;'>"
       +"<div id='numContacts' style='position: absolute; top: 0px; right: 0px; padding: 5px 10px; height: 30px; font-size: 24px; font-family: Consolas, 'Andale Mono', monospace; z-index: 2;' >XXX</div>"
       +"<div style='position: absolute; top: 0px; left: 0px; padding: 5px 10px; height: 30px; font-size: 12px; line-height: 32px; font-family: sans-serif; text-align: left; z-index: 2;'>C/S</div>"
       +"</div>"
@@ -99,11 +99,31 @@
               },100);
 
 
+
+    // ----------------------------------------------------
+    // CLOCK
+    barChart.clock = new Date();
+    $("#report").prepend("<div id='clock' style='left:0px;position:relative;display:block;' >"
+      +"<div style='padding: 5px; min-width: 75px; height: 30px; line-height: 30px; text-align: right; text-shadow: rgba(255, 255, 255, 0.498039) 1px 1px 0px, rgba(255, 255, 255, 0.498039) -1px -1px 0px; color: rgb(102, 102, 102); background-color: rgb(255, 255, 255); box-shadow: rgba(0, 0, 0, 0.0980392) 0px 0px 0px 1px; position: absolute; z-index: 10; left: 5px; top: 5px; right: auto; bottom: auto; margin: 0px; cursor: pointer; background-position: initial initial; background-repeat: initial initial;'>"
+      +"<div id='numSeconds' style='position: absolute; top: 0px; right: 0px; padding: 5px 10px; height: 30px; font-size: 24px; font-family: Consolas, 'Andale Mono', monospace; z-index: 2;' >0</div>"
+      +"<div style='position: absolute; top: 0px; left: 0px; padding: 5px 10px; height: 30px; font-size: 12px; line-height: 32px; font-family: sans-serif; text-align: left; z-index: 2;'>Time</div>"
+      +"</div>"
+      +"</div>")
+
+    var contactMeters = window.setInterval(
+              function(){
+                var d=new Date();
+                var now = Math.round((d.getTime()-barChart.clock.getTime())/1000)
+                $("#numSeconds").text(now)
+              },1000);
+
+
+
     // ----------------------------------------------------
     // DEFINE PARAMETER PRESENT IN THE PANEL  
     var controlpanel = {
       targetId:"panel",
-      title:"Param",
+      title:"Parameters:",
       control:[
                 {
                   id:   "slider_TokensSeconds",
