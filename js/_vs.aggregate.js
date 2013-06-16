@@ -405,24 +405,25 @@
 			
   update : function (_this) {
 
-		if(typeof(_this.settings.data.strata)=='undefined' || _this.settings.data.strata.length==0  || _this.settings.data.strata[0].length==0) // Skip layers if no strata is defined
+	if(typeof(_this.settings.data.strata)=='undefined' || _this.settings.data.strata.length==0  || _this.settings.data.strata[0].length==0) // Skip layers if no strata is defined
 			return;
 				
-		var w = _this.settings.chart.width/_this.settings.data.model.length;
-		var h = _this.settings.sedimentation.aggregation.height;
-
-    var x = d3.scale.linear()
+	var w = _this.settings.chart.width/_this.settings.data.model.length;
+	var h = _this.settings.sedimentation.aggregation.height;
+	var t = _this.settings.sedimentation.aggregation.transition;
+	
+	var x = d3.scale.linear()
         .domain([0, _this.settings.data.strata.length-1])
         .range([0, _this.settings.width]);            
         
     var data =_this.settings.data.strata.map(function(d) { return {value:d[0].value};});    
         
-		var sum_strata =_this.settings.data.strata.map(
+	var sum_strata =_this.settings.data.strata.map(
 			function(d) { 
 					for(var v=0, res=0; v<d.length; v++)
 						res+=d[v].value;
 					return res;
-			});
+	});
 
     var y = d3.scale.linear()
         .domain([0, d3.max(sum_strata)]) 
@@ -434,7 +435,7 @@
    
 		var hh=0;
 	
-		// Rectangular strata
+	// Rectangular strata
     var area = d3.svg.area()
         .x(function(d) { return _this.settings.chart.spacer+d.x * (w-2*_this.settings.chart.spacer) / smx; })
         .y0(function(d) { return (h - d.y0 * hh); }) //hh/smy
@@ -459,12 +460,12 @@
 
 		gpath.select("path")
 			.transition()
-            .duration(100)
+            .duration(t)
             .attr("d", function(d,i) {
 							_this.chartUpdate(i, -y(sum_strata[i])-(h-_this.settings.chart.height));
 							hh = _this.settings.chart.height-_this.chart.getPosition(_this)[d[0].col].y;
 							return area(d);
           });
-			}
+		}
   }    
 })(jQuery);

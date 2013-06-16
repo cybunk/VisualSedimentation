@@ -19,13 +19,14 @@ $.fn._vs.flocculate = {
     },
 
     update:function(_this,c,nbtokens) {
+
       if(_this.settings.sedimentation.flocculate.number==1){
        while(this.buffer[c].length > nbtokens) {
          var token = this.buffer[c].shift();
          this.destroyIt(_this,token)
        }
-      }else {
-        while(this.buffer[c].length > _this.settings.sedimentation.flocculate.number) {
+      }else if (this.buffer[c].length>_this.settings.sedimentation.flocculate.bufferSize) {
+        while(this.buffer[c].length > _this.settings.sedimentation.flocculate.bufferSize) {
            var token = this.buffer[c].shift();
            this.destroyIt(_this,token)
         }
