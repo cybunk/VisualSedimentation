@@ -28,11 +28,11 @@
       <h1>Hello World Stress test </h1>
       <!-- div container -->
       <div id="myDemo" style="width:350px;"></div>
-      <div id="report">
+      <div id="report"  style="top:-320px;left:390px;position:relative;display:block;">
       <div id="fpsmeter" style="left:180px;position:relative;display:block;"></div>
       </div>
       <!-- div panel -->
-      <div id="panel" style="top:-350px;left:450px;position:relative;display:block;width:300px;height:300px;">
+      <div id="panel" style="top:-350px;left:400px;position:relative;display:block;width:300px;height:300px;">
       <!-- div fps counter -->
       </div>
 
@@ -123,7 +123,7 @@
     // DEFINE PARAMETER PRESENT IN THE PANEL  
     var controlpanel = {
       targetId:"panel",
-      title:"Parameters:",
+      title:"&nbsp;",
       control:[
                 {
                   id:   "slider_TokensSeconds",
@@ -192,14 +192,14 @@
                   unit:"number of token",
                   type:"slider",
                   min:0,
-                  max:30,
+                  max:50,
                   step:1,
                   setup:function(){
                     return  barChart.settings.sedimentation.flocculate.bufferSize
                     //return barChart.settings.stream.refresh/1000*barChart.settings.data.model.length
                   },
                   update:function(event,ui,self){
-                      barChart.settings.sedimentation.flocculate.bufferSize = ui.value
+                      barChart.settings.sedimentation.flocculate.bufferSize= ui.value
                   },
                 },
                 {

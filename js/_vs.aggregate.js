@@ -445,7 +445,8 @@
     var g = vis.selectAll(".gcol");
     
 		g.data(_this.settings.data.strata, function(d,i) { return [d];});
-					
+
+	
     var gpath = g.selectAll(".gpath")
          .data(function(d,i) {
             var sd = d3.layout.stack().offset("expand")(_this.aggregate.strata_layers(_this, d.length, sm, i));

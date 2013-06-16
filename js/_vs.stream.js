@@ -59,7 +59,7 @@ $.fn._vs.stream = {
       }else{
         //console.log('direct no stream')
       }
-      console.log(_this.dataFlow)
+      //console.log(_this.dataFlow)
     },
     generator:function(_this,fn){
       /*
@@ -79,7 +79,7 @@ $.fn._vs.stream = {
        )                  
     },
     setSpeed:function(_this,speed,i){
-      
+
       this.speed  = speed;
       for( var i = 0 ; i<_this.dataFlow.length ; i++) {
         window.clearInterval(_this.dataFlow[i]);

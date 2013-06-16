@@ -34,7 +34,7 @@ $.fn._vs.decay = {
         // Update if needed
         if(strataUpdate){
           if(_this.settings.sedimentation.aggregation.strataUpdate){
-            console.log(bufferSize,this.bufferSize)
+            //console.log(bufferSize,this.bufferSize)
             if(bufferSize<=this.bufferSize){
               _this.strata.update(_this);
               this.bufferSize=0;
