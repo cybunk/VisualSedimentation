@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
 
-    <title>Hello World by Visual Sedimentation</title>
+    <title>Hello World stress test by Visual Sedimentation</title>
     <script src="http://code.jquery.com/jquery-1.9.1.js"></script>
     <script src="http://code.jquery.com/ui/1.10.3/jquery-ui.js"></script>
     <script type="text/javascript" src="../../js/_VisualSedimentation.js"></script>
@@ -184,6 +184,22 @@
                   },
                   update:function(event,ui,self){
                       barChart.settings.sedimentation.token.size.minimum = ui.value
+                  },
+                },
+                {
+                  id:"slider_Stratas_threshold",
+                  label:"Stratas update threshold",
+                  unit:"number of token",
+                  type:"slider",
+                  min:0,
+                  max:30,
+                  step:1,
+                  setup:function(){
+                    return  barChart.settings.sedimentation.flocculate.bufferSize
+                    //return barChart.settings.stream.refresh/1000*barChart.settings.data.model.length
+                  },
+                  update:function(event,ui,self){
+                      barChart.settings.sedimentation.flocculate.bufferSize = ui.value
                   },
                 },
                 {
