@@ -115,6 +115,15 @@
                 var d=new Date();
                 var now = Math.round((d.getTime()-barChart.clock.getTime())/1000)
                 $("#numSeconds").text(now)
+                if(now>=60){
+                  console.log(
+                               $("#slider_TokensSeconds_m").text(),";"
+                              ,$("#slider_Decay_m").text(),";"
+                              ,$("#numContacts").text(),";"
+                              ,$("#fpsmeter").text(),";"
+                              ,$("#numSeconds").text(),";"
+                              )
+                }
               },1000);
 
 
@@ -131,7 +140,7 @@
                   unit: "token by seconds",
                   type:"slider",
                   min: 1,
-                  max: 100,
+                  max: 105,
                   setup:function(id){
                     // return the actual token rate
                     var value = barChart.stream.getSpeed()/1000*3
@@ -162,7 +171,7 @@
                   unit:"",
                   min:1,
                   max:1.8,
-                  step:0.0001,
+                  step:0.01,
                   setup:function(){
                       return barChart.settings.sedimentation.suspension.decay.power 
                   },
