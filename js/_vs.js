@@ -164,7 +164,8 @@ var VisualSedimentation = function(element,options){
               callback:{
                 //begin:function(_this){},
                 //end:function(_this){}
-              }
+              },
+              trail:0
             },
           options:{
                   refresh:1000/30,

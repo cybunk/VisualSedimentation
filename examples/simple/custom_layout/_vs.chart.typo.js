@@ -1,6 +1,6 @@
 (function ($) {
 
-$.fn._vs.chart.sylochart = function(_this,fn,options) {
+$.fn._vs.chart.typo = function(_this,fn,options) {
 
   this.init = function (_this){
     console.log('typo Init')

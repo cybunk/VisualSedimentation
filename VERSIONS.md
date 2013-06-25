@@ -19,6 +19,13 @@ This file report modifications and features additions arround versions.
 * ADD new exemples : stackoverflow, sedivn, sedimms, wikipedia(not finish)
 * ADD slides tutorials 
 
+## v0.04 
+
+* ADD Stress test page 
+* ADD Function with a previous loaded jquery (thanks @raphv)
+* ADD Callback before and after DRAW loop 
+* ADD aggregation.
+
 ## Next version
 
 *

@@ -13,16 +13,23 @@ $.fn._vs.draw = {
       //console.log(_this.ctx)
 
       /* refresh rate and debug mode of canvas (show trail) */
-      if(this.settings.draw.trail==1) {
-        _this.ctx.clearRect(0, 0, _this.ctx.canvas.clientWidth, _this.ctx.canvas.clientHeight);
+      if(_this.settings.draw.trail!=0) {
+        //_this.ctx.clearRect(0, 0, _this.ctx.canvas.clientWidth, _this.ctx.canvas.clientHeight);
+        _this.ctx.rect(0, 0, _this.ctx.canvas.clientWidth, _this.ctx.canvas.clientHeight);
+        _this.ctx.fillStyle = "rgba(255,255,255,"+_this.settings.draw.trail+")";
+        _this.ctx.fill();
+
       }else{
+        _this.ctx.clearRect(0, 0, _this.ctx.canvas.clientWidth, _this.ctx.canvas.clientHeight);
+      }/*
+      else{
         debugDrawChart(0,
             0,
             ctx.canvas.clientWidth,
             ctx.canvas.clientHeight,
             "rgba(255,255,255,"+this.settings.draw.trail+")",
             ctx);
-      }
+      }*/
 
       // DRAW START Callback  
       if(typeof(_this.settings.draw.callback.begin)!="undefined"){
@@ -106,7 +113,6 @@ $.fn._vs.draw = {
 
         // round token 
         if(_this.settings.sedimentation.token.visible==true){
-
           _this.ctx.save();  
           _this.ctx.translate(position.x*scale, position.y*scale);  
           _this.ctx.rotate(angle);  
