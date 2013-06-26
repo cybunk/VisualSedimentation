@@ -1,6 +1,6 @@
 (function ($) {
 
-$.fn._vs.chart.trailChart3 = function(_this,fn,options) {
+$.fn._vs.chart.stalacticte = function(_this,fn,options) {
 
   this.init = function (_this){
     console.log("Init my Custom Trail Chart ")
@@ -25,13 +25,17 @@ $.fn._vs.chart.trailChart3 = function(_this,fn,options) {
 
         // Define incomming points for tokens 
         if(i<_this.settings.data.model.length){
+
+          var myX = (i*150)+(_this.settings.x+_this.settings.width/2-(450/2))
+          var myY = 500
+
           _this.settings.sedimentation.incoming.point[i]={
-                                                    x:20,
-                                                    y:(i*150)+(_this.settings.y+_this.settings.height/2-(450/2))
+                                                    x:myX,
+                                                    y:0
                                                     }
           _this.settings.sedimentation.incoming.target[i]={
-                                                    x:_this.settings.x+_this.settings.width-100,
-                                                    y:(i*150)+(_this.settings.y+_this.settings.height/2-(450/2))
+                                                    x:myX,
+                                                    y:myY
                                                     }                                                    
         }
         
@@ -62,6 +66,7 @@ $.fn._vs.chart.trailChart3 = function(_this,fn,options) {
               category:i,
               strokeStyle:"#fff",
               lineWidth:1,  
+              size:50,
               targets:[{
                   //  bizare x/2 or x ...
                   x: _this.settings.sedimentation.incoming.target[i].x,
@@ -75,7 +80,7 @@ $.fn._vs.chart.trailChart3 = function(_this,fn,options) {
                   power: impulse[i].power
               },
               phy:{
-                density:10
+                density:1
               }
             }
     return token; 
