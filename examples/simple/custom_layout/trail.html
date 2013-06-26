@@ -1,0 +1,244 @@
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>Custom layout | Visual Sedimentation</title>
+     <script src="../../lib/one-color/one-color.js"></script> 
+    <script type="text/javascript" src="../../../js/_VisualSedimentation.js"></script>
+    <script type="text/javascript" src="_vs.chart.typo.js"></script> 
+    <script type="text/javascript" src="_vs.chart.bigbin.js"></script> 
+    <script type="text/javascript" src="_vs.chart.drop.js"></script> 
+    <script type="text/javascript" src="_vs.chart.linechart.js"></script> 
+    <script type="text/javascript" src="_vs.chart.sylochart.js"></script> 
+    <script type="text/javascript" src="_vs.chart.heapchart.js"></script>
+    <script type="text/javascript" src="_vs.chart.circlelayoutless.js"></script> 
+    <script type="text/javascript" src="_vs.chart.trailchart.js"></script> 
+    <script type="text/javascript" src="_vs.chart.trailchart2.js"></script> 
+    <script type="text/javascript" src="_vs.chart.trailchart3.js"></script> 
+
+    <style>@import url(../../../css/fan-of-mike-style.css);</style>
+   </head>
+   <body>
+      <!-- div menu     -->
+    <header>‍
+    <a href="../../../index.html">Overview</a>
+    <b><a style="margin-left:1em;" href="../../index.html"> Examples</a></b>
+    <a style="margin-left:1em;" href="../../../documentation/index.html">Documentation</a></b>
+    <a style="margin-left:1em;" href="https://github.com/INRIA/VisualSedimentation" target="_blank">Source</a>
+    <a style="margin-left:1em;" href="" target="_blank">Contact / Feedback</a>
+  </header>
+
+
+      <h1>Trail test</h1>
+
+      <!-- div container -->
+      <div id="myListOfDemo" style=";position:relative;display:block;width:300px;height:70px;background:rgba(0,0,255,0.1)">
+        <script type="text/javascript">
+        // --------------------------------------------------------
+        // --------------------------------------------------------
+        // Selecteur of layout and trail power 
+
+          function getUrlVars() {
+              var vars = {};
+              var parts = window.location.href.replace(/[?&]+([^=&]+)=([^&]*)/gi, function(m,key,value) {
+                  vars[key] = value;
+              });
+              return vars;
+          }
+        
+        if(typeof(getUrlVars()["chartType"])!="undefined"){
+          var chartType = getUrlVars()["chartType"]
+        }else{
+          var chartType = "trailChart"
+        }
+
+        if(typeof(getUrlVars()["alphaTrail"])!="undefined"){
+          var alphaTrail = getUrlVars()["alphaTrail"]
+        }else{
+          var alphaTrail = 0.01
+        }
+  
+
+          var layoutTypes = [
+                             "typo",
+                             "bigbin",
+                             "linechart",
+                             "sylochart",
+                             "heapchart",
+                             "CircleLayoutLess",
+                             "CircleLayout",
+                             "StackedAreaChart",
+                             "trailChart",
+                             "trailChart2",
+                             "trailChart3"
+                             ]
+        var minAlpha = 0.01
+        var naxAlpha = 1
+        var templateLink = "<a href='{link}'>{name}</a>"
+
+        var templateOptions = "<option id='{id}' selected>{name}</option>"
+
+        var templateSel = "<select name='chartType'>"
+                        + "{options}"
+                        + "</select>"
+
+        var toptions=[]
+        for (var i = layoutTypes.length - 1; i >= 0; i--) {
+          var myoptions = templateOptions.replace("{id}",layoutTypes[i])
+          myoptions = myoptions.replace("{name}",layoutTypes[i])
+          console.log(myoptions)
+          if(layoutTypes[i]!=chartType){
+            myoptions = myoptions.replace("selected","")
+          }
+          toptions.push(myoptions)
+
+        };
+        templateSel =templateSel.replace("{options}",toptions)
+
+        document.write("<form action='trail.html' method='get'>")
+        document.write("select a layout : "+templateSel+"</br>")
+        document.write("select a alpha : <input name='alphaTrail' value='"+alphaTrail+"'></input>"+"</br>")
+        document.write("<input type='submit'></input>")
+        document.write("</form>")
+
+        // --------------------------------------------------------
+        // --------------------------------------------------------
+        </script>
+
+      </div>
+
+      <div id="myDemo"></div>
+      <!-- Create my visual sedimentation -->
+      <script type="text/javascript">
+
+       // $("#myDemo").text("trail test | layout="+chartType+" | alphaTrail="+alphaTrail)
+       if(chartType=="trailChart" || chartType=="trailChart2" || chartType=="trailChart3"){
+          var MyWidth=1000
+          var MyHeight=700       
+       }else{
+          var MyWidth=500
+          var MyHeight=350        
+       }
+
+      mySettings = {
+          width:MyWidth,
+          height:MyHeight,
+          chart:{
+              type:chartType,
+              spacer:2,
+              radius:50,
+              width:MyWidth,
+              height:MyHeight,
+              y:50
+          },
+          data:{
+                model:
+                        [
+                          {label:"Column A"},
+                          {label:"Column B"},
+                          {label:"Column C"},
+                        ],
+                strata:[
+                          [
+                            {value: 10, initValue:10, label: "Strata 1 col A"},
+                          ],[
+                            {value: 5, initValue:5, label: "Strata 2 col B"},
+                          ],[
+                            {value: 20, initValue:20, label: "Strata 2 col C"}
+                          ]      
+                        ],
+                stream:{ provider:'generator',refresh:10000/6.5}
+              },
+          sedimentation:{
+            token:{
+              size:{original:15,minimum:3}
+            },
+              suspension:{
+              decay:{power:1.009}
+            }
+          },
+          draw:{
+            trail:alphaTrail,
+            callback:{
+              beforeClear:function(_this){
+                //_this.ctx.globalCompositeOperation = "darker";
+              }
+            }
+          },
+          options:{
+            layout:false,
+            debugaggregate:true,
+          }
+        }
+      var chart = $("#myDemo").vs(mySettings).data('visualSedimentation');
+
+      </script>
+      <!-- end -->
+
+
+      <script type="text/javascript">
+        // --------------------------------------------------------
+        // special trail chart prototypage
+        // --------------------------------------------------------
+        var secondCtx = null
+        function createCanvas(chart){
+                  // Create container and canvas for physical simulation drawing 
+                var element   = document.getElementById("myDemo")
+                var container = element.insertBefore(document.createElement("div"),element.firstChild);
+                container.id  = "box_sediviz_"+GUID()
+                container.width  = chart.settings.width; // TOFIX
+                container.height = chart.settings.height;
+
+                //console.log(container.id)
+                // Allocate the new Element 
+                canvas        = container.appendChild(document.createElement("canvas"));
+                canvas.id     = "canvas";
+                canvas.width  = chart.settings.width; // TOFIX
+                canvas.height = chart.settings.height;
+                canvas.style.position = "absolute"
+                // for debug 
+                //canvas.style.top = 500
+
+                //console.log(this.settings.width,this.settings.height)
+                secondCtx = canvas.getContext("2d");  
+        }
+
+
+        if(chartType=="trailChart"|| chartType=="trailChart2"|| chartType=="trailChart3"){
+
+          chart.settings.draw.trail = 0
+          createCanvas(chart)
+
+/* TEST DEBUG 
+          secondCtx.beginPath();
+          secondCtx.rect(0, 0, 10, 10);
+          secondCtx.fillStyle = 'yellow';
+          secondCtx.fill();
+          secondCtx.lineWidth = 1;
+          secondCtx.strokeStyle = 'black';
+          secondCtx.stroke();
+  */        
+          var options = {
+                          pourcent:alphaTrail
+                        }
+
+
+          chart.settings.draw.callback.drawBody = function(_this,self,s){
+            self.drawShape(_this,secondCtx,s,options);
+          }
+
+          function trailCleaner(){
+            secondCtx.beginPath();
+            secondCtx.rect(0, 0, chart.settings.width, chart.settings.height);
+            secondCtx.fillStyle = "rgba(255,255,255,0.01)";
+            secondCtx.fill();
+            console.log()
+          } 
+          var trailCleanerInterval = window.setInterval(function(){
+            trailCleaner()
+          },1000);
+
+        }
+      </script>
+
+  </body>   
+</html>
