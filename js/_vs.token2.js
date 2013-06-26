@@ -309,7 +309,7 @@ $.fn._vs.token = {
         md.collideConnected = true;
         md.dampingRatio     = 0;
         md.maxForce         =  mmmmaxForce* this.myobj.GetBody().GetMass();
-        console.log(md.maxForce )
+        //console.log(md.maxForce )
         mouseJoint          = _this.world.CreateJoint(md);
         mouseJoint.SetTarget(new _this.phy.b2Vec2(token.targets[0].x/scale, token.targets[0].y/scale));
       }
