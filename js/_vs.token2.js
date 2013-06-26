@@ -293,12 +293,23 @@ $.fn._vs.token = {
       if(token.targets.length>0){
         //console.log()
         //CREATE JOIN MOUVEMENT TO TARGET
+        var mmmmaxForce = 20
+        var mmmmdampingRatio=0
+        if(typeof(token.targets[0].maxForce)!="undefined"){
+         var mmmmaxForce = token.targets[0].maxForce
+        }
+        if(typeof(token.targets[0].dampingRatio)!="undefined"){
+         var mmmmdampingRatio = token.targets[0].dampingRatio
+        }
+
         var md              = new _this.phy.b2MouseJointDef();
         md.bodyA            = _this.world.GetGroundBody();
         md.bodyB            = this.myobj.GetBody();
         md.target.Set(xPos,yPos);
         md.collideConnected = true;
-        md.maxForce         = 50 * this.myobj.GetBody().GetMass();
+        md.dampingRatio     = 0;
+        md.maxForce         =  mmmmaxForce* this.myobj.GetBody().GetMass();
+        console.log(md.maxForce )
         mouseJoint          = _this.world.CreateJoint(md);
         mouseJoint.SetTarget(new _this.phy.b2Vec2(token.targets[0].x/scale, token.targets[0].y/scale));
       }

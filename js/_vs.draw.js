@@ -12,13 +12,19 @@ $.fn._vs.draw = {
     update:function(_this){
       //console.log(_this.ctx)
 
+      // DRAW BEFORE CLEAR Callback  
+      if(typeof(_this.settings.draw.callback.beforeClear)!="undefined"){
+          if(typeof(_this.settings.draw.callback.beforeClear)=="function"){
+                _this.settings.draw.callback.beforeClear(_this)  
+          }
+      }
+
       /* refresh rate and debug mode of canvas (show trail) */
-      if(_this.settings.draw.trail!=0) {
+      if(typeof(_this.settings.draw.trail)!="undefined" && _this.settings.draw.trail!=0) {
         //_this.ctx.clearRect(0, 0, _this.ctx.canvas.clientWidth, _this.ctx.canvas.clientHeight);
         _this.ctx.rect(0, 0, _this.ctx.canvas.clientWidth, _this.ctx.canvas.clientHeight);
         _this.ctx.fillStyle = "rgba(255,255,255,"+_this.settings.draw.trail+")";
         _this.ctx.fill();
-
       }else{
         _this.ctx.clearRect(0, 0, _this.ctx.canvas.clientWidth, _this.ctx.canvas.clientHeight);
       }/*
@@ -38,10 +44,18 @@ $.fn._vs.draw = {
           }
       }
 
+
       /* Draw body(s) from box2d */
       for( var b = _this.world.GetBodyList() ; b ; b = b.GetNext()) {
         for (var s = b.GetFixtureList(); s != null; s = s.GetNext()) {
-          this.drawShape(_this,s);
+          // DRAW ON DEFAULT CANVAS 
+          this.drawShape(_this,_this.ctx,s);
+          // CALLBACK DRAW BODY 
+          if(typeof(_this.settings.draw.callback.drawBody)!="undefined"){
+            if(typeof(_this.settings.draw.callback.drawBody)=="function"){
+              _this.settings.draw.callback.drawBody(_this,this,s)  
+            }
+          }
         }
       }
     
@@ -82,7 +96,7 @@ $.fn._vs.draw = {
       }
     },
     
-    drawShape: function (_this,s) {
+    drawShape: function (_this,ctx,s,options) {
     var b           = s.GetBody();
     var position    = b.GetPosition();
     var angle       = b.GetAngle();
@@ -102,10 +116,20 @@ $.fn._vs.draw = {
 
         switch (s.m_userData){
           case null:
-            _this.ctx.fillStyle = "rgba(255,0,0,1)";  
+            ctx.fillStyle = "rgba(255,0,0,1)";  
           break;
           default:
-            _this.ctx.fillStyle = s.m_userData.fillStyle;  
+            ctx.fillStyle = s.m_userData.fillStyle;
+
+            // Code a supprimer 
+            if(typeof(options)!="undefined"){
+              if(typeof(options.pourcent)!="undefined"){ 
+                var tcolor =  s.m_userData.fillStyle;
+                ctx.fillStyle = one.color(tcolor).alpha(.1).cssa();
+              }
+            };
+            // fin de code a supprimer
+
           break
         }
 
@@ -113,56 +137,57 @@ $.fn._vs.draw = {
 
         // round token 
         if(_this.settings.sedimentation.token.visible==true){
-          _this.ctx.save();  
-          _this.ctx.translate(position.x*scale, position.y*scale);  
-          _this.ctx.rotate(angle);  
-          _this.ctx.beginPath();
+          ctx.save();  
+          ctx.translate(position.x*scale, position.y*scale);  
+          ctx.rotate(angle);  
+          ctx.beginPath();
           var h = (radius/radiusCoefMax*radiusCoef)*scale
           
           //console.log(s.m_userData.strokeStyle)
           if(typeof(s.m_userData.strokeStyle)!="undefined"){
-            _this.ctx.strokeStyle = s.m_userData.strokeStyle
+            ctx.strokeStyle = s.m_userData.strokeStyle
           } else{ 
-            _this.ctx.strokeStyle = "rgba(0,0,0,0)"
+            ctx.strokeStyle = "rgba(0,0,0,0)"
           }
 
           if(typeof(s.m_userData.lineWidth)!="undefined"){
-            _this.ctx.lineWidth   = s.m_userData.lineWidth 
+            ctx.lineWidth   = s.m_userData.lineWidth 
           } else { 
-            _this.ctx.lineWidth = 0
+            ctx.lineWidth = 0
           }
           
-          _this.ctx.arc(0, 0,h, 0, Math.PI*2, true); 
+          // ADD FOR TRAIL 
+          if(typeof(options)!="undefined"){
+              if(typeof(options.pourcent)!="undefined"){ 
+               ctx.lineWidth = 0
+               ctx.strokeStyle = "rgba(0,0,0,0)"
+          }}
 
-          _this.ctx.closePath();
+          ctx.arc(0, 0,h, 0, Math.PI*2, true); 
+
+          ctx.closePath();
 
           if(_this.settings.options.layout==true){
-            _this.ctx.strokeStyle = "#000"
-            _this.ctx.lineWidth   = 0.5
-            _this.ctx.stroke();
+            ctx.strokeStyle = "#000"
+            ctx.lineWidth   = 0.5
+            ctx.stroke();
           }else{
-             _this.ctx.fill();
-             _this.ctx.stroke();
-             this.showTexture(s, _this.ctx);
-
+            ctx.fill();
+            ctx.stroke();
+            this.showTexture(s, _this.ctx);
           }
-
-          _this.ctx.restore();
-
+          ctx.restore();
         }
 
 
       break
       case 1: // vertice (polygon and squares ...)
-
-        //if(s.m_userData.type != "wall" && s.m_userData.type != "lift")console.log("draw",s.m_userData)
-        
         switch (s.m_userData){
           case null:
-            _this.ctx.fillStyle = "rgba(255,0,0,1)";  
+            ctx.fillStyle = "rgba(255,0,0,1)";  
           break;
           default:
-            _this.ctx.fillStyle = s.m_userData.fillStyle;  
+            ctx.fillStyle = s.m_userData.fillStyle;  
           break
         }
 
@@ -171,40 +196,42 @@ $.fn._vs.draw = {
         var posx = position.x*scale-s.m_shape.m_vertices[0].x*scale
         var posy = position.y*scale-s.m_shape.m_vertices[0].y*scale
         
-        _this.ctx.save();
-        _this.ctx.translate(position.x*scale, position.y*scale); 
-        _this.ctx.rotate(angle);
-        _this.ctx.beginPath();
+        ctx.save();
+        ctx.translate(position.x*scale, position.y*scale); 
+        ctx.rotate(angle);
+        ctx.beginPath();
 
         //if(s.m_userData.ID==1 ){ console.log(s.m_userData.lineWidth) }
         //if(typeof(s.m_userData.fillStyle)!="undefined")   _this.ctx.fillStyle   = s.m_userData.fillStyle
-        if(typeof(s.m_userData.strokeStyle)!="undefined"){ _this.ctx.strokeStyle = s.m_userData.strokeStyle
-        } else{   _this.ctx.strokeStyle = s.m_userData.fillStyle}
+        if(typeof(s.m_userData.strokeStyle)!="undefined"){ 
+          ctx.strokeStyle = s.m_userData.strokeStyle
+        } else{   ctx.strokeStyle = s.m_userData.fillStyle}
 
-        if(typeof(s.m_userData.lineWidth)!="undefined"){  _this.ctx.lineWidth   = s.m_userData.lineWidth 
-        } else{   _this.ctx.lineWidth = 0}
+        if(typeof(s.m_userData.lineWidth)!="undefined"){  
+          ctx.lineWidth   = s.m_userData.lineWidth 
+        } else{   ctx.lineWidth = 0}
 
         for (var i = 0; i < s.m_shape.m_vertices.length; i++) {
           var points = s.m_shape.m_vertices;
           //var this = {x:0,y:0}
-          _this.ctx.moveTo(( points[0].x) * scale, (points[0].y) * scale);
+          ctx.moveTo(( points[0].x) * scale, (points[0].y) * scale);
           for (var j = 1; j < points.length; j++) {
-             _this.ctx.lineTo((points[j].x ) * scale, (points[j].y ) * scale);
+             ctx.lineTo((points[j].x ) * scale, (points[j].y ) * scale);
           }
-          _this.ctx.lineTo(( points[0].x) * scale, ( points[0].y) * scale);
+          ctx.lineTo(( points[0].x) * scale, ( points[0].y) * scale);
         }
-        _this.ctx.closePath();
+        ctx.closePath();
         
         
-        _this.ctx.fill();
+        ctx.fill();
         
         this.showTexture(s, _this.ctx);
 
         // pour le debug mode
         if(_this.settings.options.layout==true){
-          _this.ctx.lineWidth   = .25;
-          _this.ctx.strokeStyle ="rgb(0,0,0)"
-          _this.ctx.stroke();
+          ctx.lineWidth   = .25;
+          ctx.strokeStyle ="rgb(0,0,0)"
+          ctx.stroke();
 
           // incomming points Drawer
           //for (var i = _this.settings.sedimentation.incoming.point.length - 1; i >= 0; i--) {
@@ -218,29 +245,24 @@ $.fn._vs.draw = {
           //};
 
         }else{
-          _this.ctx.stroke();
+          ctx.stroke();
         }
-        _this.ctx.restore();
+        ctx.restore();
 
       break;
       case 2:
   
       break;
-      _this.ctx.fillStyle = "rgb(0,0,0)";  
+      ctx.fillStyle = "rgb(0,0,0)";  
     }
    }
-
-    // Call back draw 
+    // TOKEN CALL BACK DRAW
     if(typeof(s.m_userData.callback)!="undefined"){
         if(typeof(s.m_userData.callback.draw)=="function"){
                var t = _this.select('ID',s.m_userData.ID)
                s.m_userData.callback.draw(t)  
         }
     }
-
-    //if(s.m_userData.fillStyle=="black"){
-    //  console.log(s.m_userData.cycle,"",s)
-    //}
   }
 }
 
