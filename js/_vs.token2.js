@@ -294,7 +294,7 @@ $.fn._vs.token = {
         //console.log()
         //CREATE JOIN MOUVEMENT TO TARGET
         var mmmmaxForce = 20
-        var mmmmdampingRatio=0
+        var mmmmdampingRatio=10
         if(typeof(token.targets[0].maxForce)!="undefined"){
          var mmmmaxForce = token.targets[0].maxForce
         }
@@ -307,7 +307,7 @@ $.fn._vs.token = {
         md.bodyB            = this.myobj.GetBody();
         md.target.Set(xPos,yPos);
         md.collideConnected = true;
-        md.dampingRatio     = 0;
+        md.dampingRatio     = mmmmdampingRatio;
         md.maxForce         =  mmmmaxForce* this.myobj.GetBody().GetMass();
         //console.log(md.maxForce )
         mouseJoint          = _this.world.CreateJoint(md);
