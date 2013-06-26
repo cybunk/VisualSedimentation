@@ -27,11 +27,11 @@ $.fn._vs.chart.trailChart3 = function(_this,fn,options) {
         if(i<_this.settings.data.model.length){
           _this.settings.sedimentation.incoming.point[i]={
                                                     x:100,
-                                                    y:(i*100)+(_this.settings.y+_this.settings.height/2-(300/2))
+                                                    y:(i*150)+(_this.settings.y+_this.settings.height/2-(450/2))
                                                     }
           _this.settings.sedimentation.incoming.target[i]={
                                                     x:_this.settings.x+_this.settings.width-100,
-                                                    y:_this.settings.y+_this.settings.height/2
+                                                    y:(i*150)+(_this.settings.y+_this.settings.height/2-(450/2))
                                                     }                                                    
         }
         
