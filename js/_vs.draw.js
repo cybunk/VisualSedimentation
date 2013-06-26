@@ -121,11 +121,11 @@ $.fn._vs.draw = {
           default:
             ctx.fillStyle = s.m_userData.fillStyle;
 
-            // Code a supprimer 
+            // ADD FOR TRAIL Code a supprimer 
             if(typeof(options)!="undefined"){
               if(typeof(options.pourcent)!="undefined"){ 
                 var tcolor =  s.m_userData.fillStyle;
-                ctx.fillStyle = one.color(tcolor).alpha(.1).cssa();
+                ctx.fillStyle = one.color(tcolor).alpha(options.pourcent).cssa();
               }
             };
             // fin de code a supprimer
