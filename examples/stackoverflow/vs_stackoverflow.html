@@ -1,0 +1,86 @@
+<html>
+  <head>
+    <title>StackOverflow Example</title>
+    <script>var _vsDirectory = "../js/"; </script>
+    <script type="text/javascript" src="../js/_VisualSedimentation.js">
+    </script>
+  </head>
+  <body>
+
+      <script type="text/javascript">
+
+        $.ajax({
+         type: 'GET',
+         url: 'http://stackoverflow.com/feeds/tag/java',
+         dataType: 'xml',
+         error: function(xhr) {
+           alert('Failed to parse feed');
+         },
+         success: function(xml) {
+           var channel = $('channel', xml).eq(0);
+           var items = [];
+           $('item', xml).each( function() {
+             var item = {};
+             item.title = $(this).find('title').eq(0).text();
+             item.link = $(this).find('link').eq(0).text();
+             item.description = $(this).find('description').eq(0).text();
+             item.updated = $(this).find('pubDate').eq(0).text();
+             item.id = $(this).find('guid').eq(0).text();
+             items.push(item);
+           });
+           console.dir(items);
+         }
+        });
+      </script>
+
+
+      <!-- div container -->
+
+      <div id="pieChart"> Pie Chart  </div>
+      <div id="piechart2"> Pie Chart with a micro core and wall  </div>
+
+      <!-- Create my visual sedimentation -->
+      <script type="text/javascript">
+        
+      mySettings = {
+          data:{
+            initial:[
+                    {label:'Label A',value:10},
+                    {label:'Label B',value:20},
+                    {label:'Label C',value:10},
+                    {label:'Label D',value:10}
+                    ],
+            stream:{
+              refresh:10000/6
+            }
+          },
+          sedimentation:{
+            token:{
+              size:{original:5,minimum:3}
+            }
+          },
+          chart:{
+                 type:'CircleLayout',
+                 spacer:2,
+                 radius:30,
+                },
+          options:{
+            layout:true
+          }
+        }
+      
+      var otherBarChart = $("#pieChart").vs(mySettings).data('visualSedimentation');
+
+      mySettings.chart.radius=5;
+
+      //var myBarChart2 = $("#piechart2").vs(mySettings).data('visualSedimentation');
+      
+      mySettings.chart.type='StackedAreaChart';
+
+      var myBarChart = $("#piechart2").vs(mySettings).data('visualSedimentation');
+
+      </script>
+      <!-- end -->
+
+  </body>   
+</html>

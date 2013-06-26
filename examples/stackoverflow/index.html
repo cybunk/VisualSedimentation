@@ -1,0 +1,481 @@
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>Stack OverFlow live Questioning  process visualization </title>
+    <meta name="author" content="Samuel Huron">
+    <link href="stackoverflow.png" rel="image_src" />
+
+    <script type="text/javascript">
+      var _gaq = _gaq || [];
+      _gaq.push(['_setAccount', 'UA-00706690-1']);
+      _gaq.push(['_trackPageview']);
+
+      (function() {
+        var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+        ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+        var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+      })();
+
+    </script>
+    <script src='../lib/one-color/one-color.js'></script>
+    <script type="text/javascript" src="../../js/_VisualSedimentation.js"></script>
+    <script type="text/javascript" src="../lib/miniBuffer/miniBuffer.js"></script>
+    <style>@import url(../../css/fan-of-mike-style.css);</style>
+    <style>
+      .label{
+        position:relative;
+        float:left;
+        font-weight: 700;
+        padding-bottom: 10px;
+        text-align: center;
+      }
+      .rotate30{
+        -webkit-transform:rotate(-30deg);
+        -ms-transform:rotate(30deg);
+        -moz-transform:rotate(30deg);
+      }
+      .legend{
+        float:left;position:relative;text-align:left;
+      }
+      #suspensionMsg{
+       float:left;position:relative;text-align:left;width:650px; 
+      }
+      #barChart{
+        background-position:left bottom;
+        background-repeat:no-repeat;
+        background-image:url('bin.png');
+        position: relative;
+        float: left;
+        display: block;
+        width: 400px;
+      }
+      #lastItems{
+        padding: 10px;
+        /*background-color: #FFF8DC;*/
+        border: 1px solid #E0DCBF;
+        -moz-box-shadow: 0 1px 1px rgba(0, 0, 0, 0.1),0 1px 0 #ffffff inset;
+        -webkit-box-shadow: 0 1px 1px rgba(0, 0, 0, 0.1),0 1px 0 #ffffff inset;
+        box-shadow: 0 1px 1px rgba(0, 0, 0, 0.1),0 1px 0 #ffffff inset;
+        color: #444;
+        width:200px;
+        height:185px;
+        position: relative;
+        float: left;
+        display: block;
+        overflow-y:scroll;
+        overflow-x:none; 
+      }
+      .item{
+        padding-bottom:2px;
+        border-bottom: solid 1px grey;
+
+      }
+      table{
+      }
+      td{
+        font-family: "Helvetica Neue", Helvetica, sans-serif;
+        margin: 1em auto 4em auto;
+        font-size: 12px;
+        vertical-align: top;
+      }
+      .scale{
+        position: absolute;
+        border-bottom: 1px, solid #000;
+        width: 350px;
+        margin-left: -20px;
+        height:20px;
+      }
+      #wait{
+        position: absolute;
+        background-image:url('../../img/loadingAnimation.gif');
+        background-position:center center;
+        background-repeat: no-repeat;
+        width: 350px;
+        height: 206px;
+      }
+      .small{
+        font-size: 10px;
+      }
+    </style>
+  </head>
+    <!-- div container -->
+  
+  <header>‍
+    <a href="../../">Overview</a>
+    <b><a style="margin-left:1em;" href="../index.html"> Examples</a></b>
+    <a style="margin-left:1em;" href="../../documentation/index.html">Documentation</a></b>
+    <a style="margin-left:1em;" href="https://github.com/INRIA/VisualSedimentation" target="_blank">Source</a>
+    <a style="margin-left:1em;" href="" target="_blank">Contact / Feedback</a>
+  </header>
+
+  <body>
+
+    <div id="fb-root"></div>
+<script>(function(d, s, id) {
+  var js, fjs = d.getElementsByTagName(s)[0];
+  if (d.getElementById(id)) return;
+  js = d.createElement(s); js.id = id;
+  js.src = "//connect.facebook.net/fr_FR/all.js#xfbml=1&appId=235782729917";
+  fjs.parentNode.insertBefore(js, fjs);
+}(document, 'script', 'facebook-jssdk'));</script>
+      <h1>StackOverflow</h1>
+
+
+      <div style="padding-bottom:50px">
+        <div>What is the most popular language on the last 100 stackoverflow's questions ?</div>
+        <div class="legend">Live visualization of the last &nbsp;</div><div id="record" class="legend" style="font-weight:600;">100 </div> &nbsp; <div class="legend">&nbsp; questions on <a href="http://stackoverflow.com/" target="_blank"> stackoverflow</a> sort by the 10 most popular tags :</div>
+        <div id="suspensionMsg" style="height:50px;">
+        </div>
+      </div>
+
+<!--
+      <div id="top" class="scale"> 000</div>
+      <div id="bottom" class="scale"> 000</div>
+-->
+      <div id="wait">
+
+      </div>
+
+      <div style="width:650px;float:left;position:relative;">
+        <div id="headerLabel" style="width:800px;height:25px;"> </div>
+        <div id="barChart"></div>
+        <div id="lastItems">
+          <div id="list">
+          </div>
+
+        </div>
+        <div id="footerLabel"> </div>
+
+      </div>
+      <script type='text/javascript'>
+     
+       var categories = [ // to fill Query data
+                         {label:"c#"},
+                         {label:"java"},
+                         {label:"php"},
+                         {label:"javascript"},
+                         {label:"android"},
+                         {label:"jquery"},
+                         {label:"c++"},
+                         {label:"iphone"},
+                         {label:"python"},
+                         {label:"html"}
+                      ]
+
+       // Setting of the Visual Sedimentation chart 
+       var mySettings = {
+         width:350,
+         height:206,
+         chart:{
+           x:0,
+           y:0,
+           width:342,
+           height:200,
+           spacer:4
+         },
+         data:{
+               model:categories,
+               tokens:[],
+               stream:{
+                 provider:"tokens",
+                 refresh:1000,
+                 now:0
+               }
+             },
+         sedimentation:{
+           token:{
+             size:{
+                   original:4,
+                   minimum:0.0005,
+                   }
+           },
+           agregation:{height:200},
+           suspension:{
+                       incomming:'top',
+                       decay:{power:null},
+                      },
+         },
+         options:{
+           layout:false
+         }
+       }
+       // Initialise Visual Sedimentation 
+       var barChart = $("#barChart").vs(mySettings).data('visualSedimentation');
+
+       // Load Data from a Stackoverflow
+       // 
+       var myQuery = '{"categories":{"$in":['// 'jquery', 'php' ] }}'
+       for (var i  = categories.length - 1; i >= 0; i--) {
+         myQuery  += '"'+categories[i].label+'"'
+         if(i!=0){ myQuery+=","}
+       };
+       myQuery+="]}}"
+
+       var bufferSetting = {
+            // Query configuration
+            queryUrl:"http://rss.dev.fabelier.org/q",
+            //queryUrl:"http://127.0.0.1:9616/q",
+            queryParam:{
+                        query:escape(myQuery),
+                        limit:100,
+                        field:escape('{"author":1,"date":1,"title":1,"link":1,"categories":1,"guid":1}'),
+                        sort:escape('{"date":-1}'),
+                        //nobuffer:Math.random(),
+                        },
+            callback:true,
+            // data model 
+            idTocheck:"guid",
+            objectToBufferize:null,
+            // Timing and limitations
+            delay:10000,
+            maxElement:1000, // not implemented yet
+            debug:true,
+            callback:{
+              update:function(){
+                $("#wait").fadeIn('slow')
+              },
+              receive:function(){
+                $("#wait").fadeOut('slow')
+              }
+            }
+          }
+
+
+       miniBuffer.init(bufferSetting)  
+
+
+
+       var activeQuestion = function(_id,state){
+        
+        var token = barChart.selectAll('ID',_id)
+        var propertyDivColor;
+        var propertyDiv;
+        console.log( $('#'+token.attr('ID')).attr('over') )
+
+          if(state===true && $('#'+token.attr('ID')).attr('over')!=true){
+             //propertyDivColor ={'border-color':}
+             propertyDiv = {'border-left':'solid 5px '+token.attr('fillStyle'),'paddingLeft':'5px'}
+             token.attr("strokeStyle","#000")
+             token.attr("lineWidth",0.7)
+             $('#'+token.attr('ID')).attr('over','true')         
+          }
+          if(state===false) {
+             //propertyDivColor ={'border-color':'#000'}
+             propertyDiv = {'border-left':'solid 0px #000','paddingLeft':'0px'}
+             token.attr("strokeStyle","rgba(0,0,0,0)")
+             token.attr("lineWidth",0.5)
+             $('#'+token.attr('ID')).attr('over','false')   
+          }
+          //
+          //$('#'+token.attr('ID')).css(propertyDivColor)
+          $('#'+token.attr('ID')).animate(propertyDiv,50,
+            function() {
+              $('#'+token.attr('ID')).css(propertyDiv)
+              });
+          //
+       }
+
+
+
+       // RollOver and click Callback on tokens and elements 
+       tokenCallBack = {
+          suspension:function(token){
+            token.attr('lightness',0.5)
+            
+            //add 
+             $('#lastItems').append('<div class="item"'
+              +'id="'+token.attr('ID')+'"'
+              //+'style=\'background-color:'+token.attr('fillStyle')+';\''
+              +'onClick="window.open(\''+token.attr('link')+'\')"'
+              +'onMouseOver="activeQuestion(\''+token.attr('ID')+'\',true)"'
+              +'onMouseOut="activeQuestion(\''+token.attr('ID')+'\',false)"'
+              +'><div style="opacity:1;">'
+              +'<b>'+token.attr("author")+' : </b><br/>'
+              +token.attr("label")
+              +'<br><i class="small">'
+              +token.attr("date")
+              +'</i>'
+              +'</div></div>')
+             // move the scrool down
+             var objDiv = document.getElementById("lastItems");
+             //objDiv.scrollTop = objDiv.scrollHeight;
+
+          },
+          mouseover:function(token){
+             //console.log("mouseover")
+             $('#lastItems').animate({scrollTop:($('#lastItems').scrollTop()+$('#'+token.attr('ID')).position().top)},10);
+             activeQuestion(token.attr('ID'),true)
+             //$('#lastItems').scrollTop($('#lastItems').scrollTop() + $('#'+token.attr('ID')).position().top);
+             //$('#tooltip').text(token.attr("label"))
+          },
+          mouseout:function(token){
+            activeQuestion(token.attr('ID'),false)
+            $('#'+token.attr('ID')).css('background-color',"#fff")
+            scaleCategoriesShow(token)
+          },
+          onclick:function(token){
+            console.log("click",token.attr('link'))
+            window.open(token.attr('link'),'Wikipedia article')
+          },
+          draw:function(token){
+            token.attr('lightness',token.attr('lightness')-0.0001)
+            var l = token.attr('lightness')
+            var c = one.color(token.attr('fillStyle'))
+            var m = c.lightness(l).hex()
+            token.attr('fillStyle',m)
+
+            //if(token.attr('lightness')<0.1){
+              //console.log("flocculate",token.attr('ID'))
+              //token.flocculate()
+            //}
+/*
+            var s =  token.attr('shape')
+            s.points[0].y = s.points[0].y*2 
+            s.points[1].y = s.points[1].y*2 
+            s.points[2].y = s.points[2].y*2 
+            s.points[3].y = s.points[3].y*2 
+            //console.log(s.points[0].y)
+            token.attr('shape',s)
+*/
+          }
+       }
+
+       // Data Player 
+       dataPlayer = {
+                      i:0,
+                      play:function(buffer){
+                        if(this.i<=(buffer.length-1)){
+                          //console.log(this.i)
+                          if(typeof(buffer[this.i])!="undefined"){ 
+
+                            // add token in Visualization
+                            barChart.addToken({
+                              category:categoriesId(buffer[this.i].categories,categories),
+                              size:10,
+                              guid:buffer[this.i].guid,
+                              author:buffer[this.i].author,
+                              label:buffer[this.i].title,
+                              link:buffer[this.i].link,
+                              date:buffer[this.i].date,
+                              callback:tokenCallBack,
+                              strokeStyle:"rgba(0,0,0,0)",
+                              lineWidth:0.5,
+                              // Draw my token 
+                              shape:{
+                                type:'box',
+                                width:12,
+                                height:2.5
+                                /*
+                                type:'vertice',
+                                points:[
+                                      {x:-12,y:-2.5},
+                                      {x:12,y:-2.5},
+                                      {x:12,y:2.5},
+                                      {x:-12,y:2.5},
+                                ]*/
+                               }
+                            })
+
+                            // Update legend
+                            $('#record').text((barChart.selectAll('state',1).length)+" / "+buffer.length)
+
+                            // INCREMENT 
+                            this.i++;
+                          }
+                        } else {
+                          console.log("no more fresh data ")
+                        }
+                      }
+        }
+             
+
+       var categoriesId = function(tokenCategories,categories){
+          //console.log(tokenCategories)
+          var cat = null
+           for (var i = categories.length - 1; i >= 0; i--) {
+             for (var j = tokenCategories.length - 1; j >= 0; j--) {
+                if(categories[i].label==tokenCategories[j]){
+                  cat = i 
+                  break
+                }
+              } 
+           };
+           if(cat==null){
+            console.log("<!> cat : ",cat)
+           }
+           return cat  
+       }
+
+
+       // Add label 
+       var labeling =function(categories,container){
+          //$('#'+container).append('<div class="label" style="width:100px;"> &nbsp;</div>');
+          var divWidth = Math.round(mySettings.chart.width/categories.length)
+          console.log("divWidth",divWidth)
+          for (var i = 0; i < categories.length; i++) {
+            $('#'+container).append('<div class="label rotate30" style="width:'+divWidth+'px;">'+categories[i].label+'</div>');
+          }
+       }
+       // ADD LABEL TO THE CHART 
+       labeling(categories,"headerLabel")
+      
+       // ADD LABEL TO THE last element box
+       $('#headerLabel').append('<div class="label" style="padding-left:60px;">Last Messages</div>');
+
+       var playData = window.setInterval(function(){
+                                           dataPlayer.play(miniBuffer.buffer)
+                                         },
+                                         500); 
+
+
+
+       var scaleCategorieGlobal = function(){
+        var allCat =  barChart.selectAll()
+        var first  = allCat[allCat.length - 1]
+        var last   = allCat[3]
+
+        $("#top").text(last.attr('date'))
+        $("#bottom").text(first.attr('date'))
+        $("#top").css('margin-top',last.attr('y'))
+        //console.log(last.attr('y'))
+       }
+
+       var flocculate100 = function(num){
+          var allCat =  barChart.selectAll()
+          if(allCat.length>num){
+            for (var i = allCat.length - 1; i >= num; i--) {
+              allCat[i].flocculate()
+            };
+          }
+       }
+       window.setInterval(function(){flocculate100(100)}, 1000)
+
+       var scaleCategoriesShow = function(token){
+        /*
+          var allCat = barChart.selectAll("category",token.attr("category"))
+          for (var i = allCat.length - 1; i >= 0; i--) {
+            allCat[i]
+          };*/
+       }
+
+
+    </script>
+   
+    <div>
+    <div style="text-align:left;padding-left:680px;">
+      <br/><br/>
+<a href="https://twitter.com/share" class="twitter-share-button" data-url="http://www.visualsedimentation.org/examples/stackoverflow/" data-via="sediviz" data-hashtags="dataviz">Tweet</a>
+<script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0];if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src="//platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");</script>
+
+<div style="margin-top:10px;">
+  <div class="fb-like" data-href="http://www.visualsedimentation.org/examples/stackoverflow/" data-send="true" data-layout="button_count" data-width="450" data-show-faces="false"></div>
+</div>
+      <div style="margin-top:130px;">
+      Author : <a href="http://cybunk.com" target="_blank">Samuel Huron</a></br>
+      Made with : <a href="http://www.visualsedimentation.org/" target="_blank">Visual Sedimentation</a></br>
+      Tested on :  <a href="http://cybunk.com" target="_blank">Google Chrome</a></br>
+    </div>
+    </div>
+    </div>
+  </body>   
+</html>
