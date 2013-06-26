@@ -27,11 +27,11 @@ $.fn._vs.chart.trailChart = function(_this,fn,options) {
         if(i<_this.settings.data.model.length){
           _this.settings.sedimentation.incoming.point[i]={
                                                     x:0,
-                                                    y:i*100
+                                                    y:i*50
                                                     }
           _this.settings.sedimentation.incoming.target[i]={
                                                     x:_this.settings.x+_this.settings.width/2,
-                                                    y:_this.settings.y+_this.settings.height/2+100
+                                                    y:_this.settings.y+_this.settings.height/2
                                                     }                                                    
         }
         
@@ -43,15 +43,15 @@ $.fn._vs.chart.trailChart = function(_this,fn,options) {
     var i = options;
     var impulse =[
                   {
-                    angle:360,
+                    angle:0,
                     power:0.1
                   },
                   {
-                    angle:20,
+                    angle:0,
                     power:0.1
                   },
                   {
-                    angle:70,
+                    angle:0,
                     power:0.1
                   }
                 ]
