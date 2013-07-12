@@ -1,0 +1,129 @@
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>Custom layout | Visual Sedimentation</title>
+
+    <!-- COLOR LIB -->
+    <script src="../../lib/one-color/one-color.js"></script> 
+    <!-- SEDIVIZ CORE -->
+    <script type="text/javascript" src="../../../js/_VisualSedimentation.js"></script>
+
+    <!-- SEDIVIZ SPECIAL TEMPLATE -->
+    <script type="text/javascript" src="_vs.chart.circlelayoutless.js"></script> 
+
+    <style>@import url(../../../css/fan-of-mike-style.css);</style>
+   </head>
+   <body>
+      <!-- div menu -->
+    <header>‍
+    <a href="../../../index.html">Overview</a>
+    <b><a style="margin-left:1em;" href="../../index.html"> Examples</a></b>
+    <a style="margin-left:1em;" href="../../../documentation/index.html">Documentation</a></b>
+    <a style="margin-left:1em;" href="https://github.com/INRIA/VisualSedimentation" target="_blank">Source</a>
+    <a style="margin-left:1em;" href="" target="_blank">Contact / Feedback</a>
+  </header>
+
+      <h1>Pie Chart without boundaries 2</h1>
+      
+      This version token doesn't disapear over time 
+      (like <a href="pieChart_without_bounderies.html">Pie chart without bounderies 1</a>)
+      but are fixed when they reach the time of one pixel.<br />
+      Stratas are expressed by their color coding change over time.
+      Wait at least a minute to see the process.
+
+
+      <!-- PIXEL FLOCULATION SCRIPT -->
+      <SCRIPT>
+        /* override of the _vs.chart.circlelayoutless.token() methode */
+
+
+
+      </SCRIPT>
+
+
+      <!-- div container -->
+      <div id="pieChart" style="position:relative;float:left;"></div>
+
+
+      <!-- Create my visual sedimentation -->
+      <script type="text/javascript">
+        
+      mySettings = {
+          width:600,
+          height:600,
+          data:{
+                model:
+                      [
+                        {label:"Column A"},
+                        {label:"Column B"},
+                        {label:"Column C"},
+                      ],
+                strata:[
+                          [
+                            {initValue: 10, label: "Strata 1 col A"},
+                          ],[
+                            {initValue: 5, label: "Strata 1 col B"},
+                          ],[
+                            {initValue: 20, label: "Strata 2 col C"}
+                          ]      
+                        ],
+                stream:{
+                  provider:'generator',
+                  refresh:10000/20
+                }
+              },
+          sedimentation:{
+            token:{
+              size:{
+                    original:20,
+                    minimum:2
+                    }
+            },
+            suspension:{
+              decay:{power:1.05}
+            },
+            aggregation:{
+              type:"pixel"
+            },
+          },
+          chart:{
+                 type:'CircleLayoutLess',
+                 spacer:2,
+                 radius:50,
+                 width:600,
+                 height:600,
+                },
+          options:{
+             layout:false,
+          }
+        }
+          
+    mySettings.sedimentation.token.callback = {}
+    mySettings.sedimentation.token.callback.suspension = function(token){
+        token.attr('lightness',0.5)
+    }
+
+    mySettings.sedimentation.token.callback.pixelFlocculation = function(_this,self,s){  
+          console.log(self.attr("state"))
+          self.lighter = function(self){
+            if(self.attr('lightness')<0.8){
+              var l0 = self.attr('lightness')            
+              var c = one.color(self.attr('fillStyle'))
+              var m = c.lightness(l0+0.1).hex()
+              self.attr('fillStyle',m)    
+              self.attr('strokeStyle',m)
+              self.attr('lightness',l0+0.1)
+            }
+          }   
+          self.lighter(self)
+          self.intervalStrata = setInterval(function(){
+            self.lighter(self)
+          }, 30000);
+    }
+    var chart = $("#pieChart").vs(mySettings).data('visualSedimentation');
+
+      </script>
+      <!-- end -->
+
+  </body>   
+</html>

@@ -174,28 +174,6 @@ $.fn._vs.chart.CircleLayoutLess = function(_this,fn,options) {
     return  axis;
   }
 
-  this.createBox = function (_this,x,y,w,h,a,r,type,color){
-     var scale          = _this.settings.options.scale
-     var fixDef         = new _this.phy.b2FixtureDef;
-     var c              = circularCoordinate(a,r,x,y)
-
-     fixDef.density     = 1.0;
-     fixDef.friction    = 0.5;
-     fixDef.restitution = 0.2;
-     
-     var bodyDef        = new _this.phy.b2BodyDef;
-     var angle          = (a+90)*(Math.PI/180)
-     bodyDef.angle      = angle;//a+80 ;
-     //create ground
-     bodyDef.type       = _this.phy.b2Body.b2_staticBody;
-     fixDef.shape       = new _this.phy.b2PolygonShape;
-     fixDef.shape.SetAsBox(w/scale, h/scale);
-     bodyDef.position.Set(c.x/scale,c.y/scale );
-     var box = _this.world.CreateBody(bodyDef).CreateFixture(fixDef);
-     box.m_userData = {type:type,fillStyle:color,w:w,h:h,r:r}
-     //console.log(box)
-     return box
-  }
 
   this.getPosition = function(_this){
     var result =[]
@@ -216,71 +194,6 @@ $.fn._vs.chart.CircleLayoutLess = function(_this,fn,options) {
   }
 
 
-//  --------- --------- --------- --------- --------- --------- ---------
-// Bubble ---------
-  this.setupBubbleChartPhysics= function(_this){
-    console.log("setupBubbleChartPhysics")
-
-    var colSize = ( _this.settings.chart.width/ _this.settings.data.model.length)
-    var colBwid = _this.settings.chart.spacer
-    var colYpos = _this.settings.chart.height/2+_this.settings.y+colBwid
-    var Ypos    = 0;//chart.position.y;
-    var Xpos    = 0;//chart.position.x;
-    var NumCol  = _this.settings.chart.column;
-   // console.log(Xpos)
-   // console.log( _this.settings.width)
-
-  // array layout
-  for( var i = 0 ; i<_this.settings.data.model.length; i++) {
-      
-      Xpos =  _this.settings.chart.x+(i%NumCol*colBwid)+(colBwid/2)
-      Ypos =  _this.settings.chart.y+Math.floor(i/NumCol)*colBwid+(colBwid/2)
-      //console.log("- "+i+" x:"+Xpos+" y:"+Ypos);
-      _this.settings.sedimentation.incoming.target[i] = {x:Xpos,y:Ypos};
-      
-      pivot[i] = creatMyBubblePivot(Xpos,
-                                    Ypos,
-                                    _this.settings.chart.spacer,
-                                    i);
-
-      _this.settings.data.model[i].incomingPoint = {
-                                     x:Xpos,
-                                     y:Ypos
-                                   };
-      
-    }
-
-  }
-function creatMyBubblePivot(Xpos,Ypos,radius,id){
-   console.log("CreatMyBubblePivot",Xpos,Ypos,radius,id)
-   
-   var scale          = _this.settings.options.scale
-   var fixDef         = new _this.phy.b2FixtureDef;
-   var colorRange     = d3.scale.category10()
-
-    fixDef.density    = 10000;
-    fixDef.friction   = 0.0;
-    fixDef.restitution= 0.0;
-
-   var bodyDef        = new _this.phy.b2BodyDef;
-   fixDef.shape       = new _this.phy.b2CircleShape(radius*scale);
-   bodyDef.position.Set(Xpos/scale, Ypos/scale);
-
-   var axis           = _this.world.CreateBody( bodyDef);
-   var axisf          = axis.CreateFixture(fixDef);
-
-   console.log(id,colorRange(id))
-   axisf.m_userData   = {
-                         type:"BubblePivot",
-                         familyID:id,
-                         fillColor:_this.settings.chart.wallColor
-                        }
-   console.log(id,axisf)
-
-   axisf.m_shape.m_radius = _this.settings.data.model[id].value/scale;
-   //console.log(Xpos,Ypos)
-   return axisf;
-}
 
 this.getPivotPosition =function (id){
   
@@ -297,14 +210,6 @@ this.getPivotPosition =function (id){
   }
 }
 
-function updatePivotFixPosition(x,y,id){
-    var myBody        = pivot[id].GetBody();
-    myBody.SetPosition(new b2Vec2(x/scale, y/scale));
-    _this.settings.data.model[id].incomingPoint.x=x;
-    _this.settings.data.model[id].incomingPoint.y=y;
-    setFlowSpeed(speedFlow);
-
-}
 function setPivotPosition(x,y,id){
     for( var i = 0 ; i<categorys[id].joins.length; i++) {
       categorys[id].joins[i].SetTarget(new b2Vec2(x/scale, y/scale));

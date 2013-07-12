@@ -11,10 +11,10 @@
     <style>@import url(../../../css/jquery-ui-1.9.2.custom/css/custom-theme/jquery-ui-1.9.2.custom.css);</style>
     <script src="http://code.jquery.com/jquery-1.9.1.js"></script>
     <script src="http://code.jquery.com/ui/1.10.3/jquery-ui.js"></script>
-
     
     <!-- SEDIVIZ CORE -->
     <script type="text/javascript" src="../../../js/_VisualSedimentation.js"></script>
+
     <!-- SEDIVIZ MODULE -->
     <script type="text/javascript" src="_vs.chart.typo.js"></script> 
     <script type="text/javascript" src="_vs.chart.bigbin.js"></script> 
@@ -55,8 +55,10 @@
       <h1>Trail test</h1>
 
       <!-- div container -->
-      <div id="myListOfDemo" style=";position:relative;display:block;width:300px;height:70px;background:rgba(0,0,255,0.1)">
+      <div id="myListOfDemo" style=";position:relative;display:block;width:300px;height:70px;">
+
         <script type="text/javascript">
+        //{ WRITE DETAILS}
         // --------------------------------------------------------
         // --------------------------------------------------------
         // Selecteur of layout and trail power 
@@ -78,7 +80,7 @@
         if(typeof(getUrlVars()["alphaTrail"])!="undefined"){
           var alphaTrail = getUrlVars()["alphaTrail"]
         }else{
-          var alphaTrail = 0.01
+          var alphaTrail = 0.1
         }
   
 
@@ -194,7 +196,7 @@
               size:{original:15,minimum:3}
             },
               suspension:{
-              decay:{power:1.009}
+              decay:{power:1.05}
             }
           },
           draw:{
@@ -253,7 +255,7 @@
           chart.settings.draw.trail = 0
           createCanvas(chart)
 
-/* TEST DEBUG 
+        /* TEST DEBUG 
           secondCtx.beginPath();
           secondCtx.rect(0, 0, 10, 10);
           secondCtx.fillStyle = 'yellow';
@@ -261,7 +263,7 @@
           secondCtx.lineWidth = 1;
           secondCtx.strokeStyle = 'black';
           secondCtx.stroke();
-  */        
+        */        
           var options = {
                           pourcent:alphaTrail
                         }
@@ -274,7 +276,7 @@
           function trailCleaner(){
             secondCtx.beginPath();
             secondCtx.rect(0, 0, chart.settings.width, chart.settings.height);
-            secondCtx.fillStyle = "rgba(255,255,255,0.1)";
+            secondCtx.fillStyle = "rgba(255,255,255,0.05)";
             secondCtx.fill();
             console.log()
           } 
