@@ -21,9 +21,10 @@ $.fn._vs.decay = {
           if(power!=0){
             this.tokens[b].attr("size",tokenSize/power)
           }
-          // Flocculate     
-          if(tokenSize<=limit){
-            if (_this.settings.sedimentation.flocculate.strategy!=null){ 
+
+        // Flocculate     
+        if(tokenSize<=limit){
+          if (_this.settings.sedimentation.flocculate.strategy!=null){ 
               _this.flocculate.destroyIt(_this,this.tokens[b]);
               strataUpdate = true
               this.bufferSize++

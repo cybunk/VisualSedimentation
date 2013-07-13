@@ -139,7 +139,7 @@ var VisualSedimentation = function(element,options){
             			 number:1,	              // 1 = one element by one, more = by groupe of n
             			 action:"buffer",       	// [buffer,continue]
             			 strategy:"Size",       	// [BufferSize, Time, AcummulationAreaHeight, Fps, Manual]
-                   bufferSize:10,         	  // number of token to make floculation
+                   bufferSize:10,         	// number of token to make floculation
             			 bufferTime:1000,      	  // time buffer to make flocullation
             			 bufferHeight:50,       	// height (pixel) to make floculation
             			 bufferFrameRate:25,    	// if the computer is to slow floculate
@@ -151,8 +151,11 @@ var VisualSedimentation = function(element,options){
                           decay:{power:1.01}, // null
                           refresh:200
                          },
-              accumulation:{height:null},   // pourcent ,adaptative
+              accumulation:{                // pourcent ,adaptative
+                          height:null
+              },  
               aggregation:{
+                    type:"stacked",         // pixel, stacked, chained, trails, isocontours 
                     height:100,           // pourcent ,adaptative
                     maxData:0,
                     invertStrata:false,

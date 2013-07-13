@@ -14,12 +14,36 @@ $.fn._vs.flocculate = {
     destroyIt:function(_this,token){
       token.attr("callback","flocculation",token) // callback 
       token.attr("state",2)                       // flocullating state
-      var del = _this.world.DestroyBody(token.myobj.GetBody());
+      
+
+      if(typeof(_this.settings.sedimentation.aggregation.type)!="undefined"){
+        if(_this.settings.sedimentation.aggregation.type=="pixel"){
+          //var del = _this.world.DestroyBody(token.myobj.GetBody());
+          //Box2D.Dynamics.b2Body.b2_dynamicBody
+          var body = token.myobj.GetBody()
+          body.SetType(Box2D.Dynamics.b2Body.b2_staticBody)
+          body.SetAwake(false)
+          body.SetLinearDamping(true)
+          body.SetLinearVelocity(true)
+          //console.log(body.GetType())
+          //body.SetActive(false)
+          if(typeof( _this.settings.sedimentation.token.callback)!="undefined"){
+              if(typeof( _this.settings.sedimentation.token.callback.pixelFlocculation)=="function"){
+                    _this.settings.sedimentation.token.callback.pixelFlocculation(_this,token)  
+              }
+          }
+
+          //console.log(token)
+        }else{
+          var del = _this.world.DestroyBody(token.myobj.GetBody()); 
+        }
+      }else{
+        var del = _this.world.DestroyBody(token.myobj.GetBody());
+      }
       return del
     },
 
     update:function(_this,c,nbtokens) {
-
       if(_this.settings.sedimentation.flocculate.number==1){
        while(this.buffer[c].length > nbtokens) {
          var token = this.buffer[c].shift();

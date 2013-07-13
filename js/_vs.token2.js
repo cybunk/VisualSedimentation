@@ -126,6 +126,7 @@ $.fn._vs.token = {
         if(typeof(token.setting.x)      =='undefined') {token.setting.x      = _this.settings.sedimentation.incoming.point[element.category].x+(Math.random()*2)}
         if(typeof(token.setting.y)      =='undefined') {token.setting.y      = _this.settings.sedimentation.incoming.point[element.category].y+(Math.random()*2)}
         if(typeof(token.setting.size)   =='undefined') {token.setting.size   = _this.settings.sedimentation.token.size.original}
+        if(typeof(token.setting.callback)   =='undefined') {token.setting.callback   = _this.settings.sedimentation.token.callback}
         if(typeof(token.setting.targets)=='undefined') {token.setting.targets=[]}
         token.setting.ID = token.setting.ID = this.ID(_this)
         if(typeof(token.setting.state)  =='undefined') {token.setting.state  = 0}
@@ -201,7 +202,7 @@ $.fn._vs.token = {
       if(typeof(this.myobj.m_userData.callback)!="undefined"){
         if(typeof(this.myobj.m_userData.callback.suspension)=="function"){
            var t = _this.select('ID',token.setting.ID)
-           this.myobj.m_userData.callback.suspension(t)         
+           this.myobj.m_userData.callback.suspension(t,_this)         
         }
       }
 
@@ -274,9 +275,9 @@ $.fn._vs.token = {
                    //    }
       }
 
-      this.myobj.m_userData       = token 
-      this.myobj.attr             = this.attr// function (){console.log(this)} 
-      this.myobj.m_userData.mouse = {}
+      this.myobj.m_userData                   = token 
+      this.myobj.attr                         = this.attr// function (){console.log(this)} 
+      this.myobj.m_userData.mouse             = {}
       this.myobj.m_userData.mouse.over        = false;
       this.myobj.m_userData.mouse.down        = false;
       this.myobj.m_userData.mouse.dragging    = false;
@@ -573,21 +574,21 @@ $.fn._vs.token = {
         myo.m_userData={type:"PieBall",familyID:family,fillColor:categorys[family].color}
         
         listBodies.push(myo);
-      var myobj = myo.CreateFixture(fixDef);
+      var myobj  = myo.CreateFixture(fixDef);
       
       //CREATE JOIN MOUVEMENT TO TARGET
-      var md = new b2MouseJointDef();
+      var md     = new b2MouseJointDef();
         md.bodyA = world.GetGroundBody();
         md.bodyB = myobj.GetBody();
         md.target.Set(xPos,yPos);
     
         md.collideConnected = true;
         md.maxForce = 100* myobj.GetBody().GetMass();
-        mouseJoint = world.CreateJoint(md);
+        mouseJoint  = world.CreateJoint(md);
       mouseJoint.SetTarget(new b2Vec2(target.position.x/scale, target.position.y/scale));
       
       // ADD INFO IN OBJECT
-      myobj.m_userData={type:"PieBall",familyID:family,fillColor:colorScale(family)}
+      myobj.m_userData = {type:"PieBall",familyID:family,fillColor:colorScale(family)}
       categorys[family].value+=1;
       //setTimeout(function(){mouseJoint.SetTarget(chart.position.x/scale, chart.position.y/scale)},1000);
     
@@ -595,11 +596,11 @@ $.fn._vs.token = {
     },
     
     createDataBall:function (_this, x, y,size) { 
-      var fixDef      = new Box2D.Dynamics.b2FixtureDef;
-        fixDef.density    = 1.0;
-        fixDef.friction   = 0.5;
-        fixDef.restitution  = 0.2;
-        fixDef.shape    = new Box2D.Collision.Shapes.b2CircleShape(size/_this.settings.options.scale);
+      var fixDef           = new Box2D.Dynamics.b2FixtureDef;
+        fixDef.density     = 1.0;
+        fixDef.friction    = 0.5;
+        fixDef.restitution = 0.2;
+        fixDef.shape       = new Box2D.Collision.Shapes.b2CircleShape(size/_this.settings.options.scale);
     
       var bodyDef = new Box2D.Dynamics.b2BodyDef;
       bodyDef.type = Box2D.Dynamics.b2Body.b2_dynamicBody;
