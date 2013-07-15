@@ -12,7 +12,7 @@ $.fn._vs.chart.CircleLayoutLess = function(_this,fn,options) {
 
   this.init = function (_this,options){
     console.log('Circle Layout Init')
-    this._this                   = _this
+    this._this              = _this
     gravity                 = new _this.phy.b2Vec2(0, 0);    // Zero gravity
     _this.world.m_gravity   = gravity;
     _this.chartPhySetup     = {grounds:[],wall:[]}
