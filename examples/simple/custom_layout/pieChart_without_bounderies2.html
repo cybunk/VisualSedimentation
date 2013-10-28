@@ -106,13 +106,13 @@
     mySettings.sedimentation.token.callback.pixelFlocculation = function(_this,self,s){  
           //console.log(self.attr("state"))
           self.lighter = function(self){
-            if(self.attr('lightness')>0.2){
+            if(self.attr('lightness')>=0.3){
               var l0 = self.attr('lightness')            
               var c = one.color(self.attr('fillStyle'))
-              var m = c.lightness(l0-0.1).hex()
+              var m = c.lightness(l0-0.05).hex()
               self.attr('fillStyle',m)    
               self.attr('strokeStyle',m)
-              self.attr('lightness',l0-0.1)
+              self.attr('lightness',l0-0.05)
             }
           }   
           self.lighter(self)

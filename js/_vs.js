@@ -155,7 +155,7 @@ var VisualSedimentation = function(element,options){
                           height:null
               },  
               aggregation:{
-                    type:"stacked",         // pixel, stacked, chained, trails, isocontours 
+                    type:"stacked",       // pixel, stacked, chained, trails, isocontours 
                     height:100,           // pourcent ,adaptative
                     maxData:0,
                     invertStrata:false,
