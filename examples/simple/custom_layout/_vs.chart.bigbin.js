@@ -39,12 +39,12 @@ $.fn._vs.chart.bigbin = function(_this,fn,options) {
       _this.settings.sedimentation.token.size.original = getURLParameter("tokenSize")
     }
     if(getURLParameter("incomingSpace")=="null"){
-      var incomingSpace = 50
+      //console.log("!!!",_this.settings.chart.width,_this.settings.data.model.length )
+      var incomingSpace = _this.settings.chart.width/(_this.settings.data.model.length*2)
     }else{
       var incomingSpace = Number(getURLParameter("incomingSpace"))
     }
     console.log(getURLParameter("incomingSpace"))
-
 
     var colXpos = _this.settings.chart.x+(1*colSize);
 
@@ -60,7 +60,8 @@ $.fn._vs.chart.bigbin = function(_this,fn,options) {
                                            x:incomingSpace*5,
                                            y:0//_this.settings.y+_this.settings.height/2
                                            }
-    this.createBoxContainer(_this,0,0,incomingSpace*6,300,null,null,0,0)
+    this.createBoxContainer(_this,0,0,
+      _this.settings.chart.width,_this.settings.chart.height,null,null,0,0)
 
   }
 

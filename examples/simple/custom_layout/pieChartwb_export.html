@@ -7,9 +7,11 @@
     <script src="../../lib/one-color/one-color.js"></script> 
 
     <!-- SVG EXPORT LIB -->
-    <script src="../../lib/MochiKit/MochiKit.js"></script> 
-    <script src="../../lib/SVGKit/SVGKit.js"></script> 
-    
+    <script src="../../../js/lib/MochiKit/MochiKit.js"></script> 
+    <script src="../../../js/lib/SVGKit/SVGKit.js"></script> 
+    <script src="../../../js/lib/SVGKit/SVGCanvas.js"></script> 
+    <script src="../../../js/lib/SVGKit/SVGCanvasPaths.js"></script> 
+
     <!-- SEDIVIZ CORE -->
     <script type="text/javascript" src="../../../js/_VisualSedimentation.js"></script>
 
@@ -17,6 +19,7 @@
     <script type="text/javascript" src="_vs.chart.circlelayoutless.js"></script> 
 
     <style>@import url(../../../css/fan-of-mike-style.css);</style>
+
    </head>
    <body>
       <!-- div menu -->
@@ -54,8 +57,8 @@
       <script type="text/javascript">
         
       mySettings = {
-          width:1000,
-          height:1000,
+          width:300,
+          height:300,
           data:{
                 model:
                       [
@@ -95,8 +98,6 @@
                  type:'CircleLayoutLess',
                  spacer:2,
                  radius:50,
-                 width:1000,
-                 height:1000,
                 },
           options:{
              layout:false,
@@ -130,6 +131,27 @@
 
       </script>
       <!-- end -->
+
+
+    <!-- SVG EXPORT --> 
+    <script>
+       
+        var svgExport = function(target) {
+
+          if(typeof(target!="undefined")){target = 'pieChart'}
+
+            var ctx  = new SVGCanvas(chart.settings.width,
+                                     chart.settings.height)
+
+            appendChildNodes(target, ctx.svg.htmlElement)
+
+            chart.draw.update(chart,ctx) 
+            console.log(ctx)
+        }
+        svgExport()
+
+    </script>
+
 
   </body>   
 </html>
